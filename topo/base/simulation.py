@@ -180,6 +180,9 @@ class EventProcessor(param.Parameterized):
         in_connections of an EventProcessor (e.g. obj.conn, for
         in_connection "conn" of EventProcessor obj).
         """
+        if name == 'in_connections':
+            return [] # Fix compensate for changes in param 1.8.1
+        
         for conn in self.in_connections:
             if conn.name == name: return conn
         raise AttributeError
