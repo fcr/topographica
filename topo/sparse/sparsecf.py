@@ -13,7 +13,7 @@ import numpy as np
 import math
 from scipy.ndimage.filters import gaussian_filter
 import param
-import imagen as ig
+import imagen as imagen
 
 from copy import copy
 
@@ -165,7 +165,7 @@ class CFSPOF_SproutRetract(CFSPOF_Plugin):
         time = math.ceil(topo.sim.time())
 
         if self.disk_mask:
-            self.disk = ig.Disk(size=1.0,smoothing=0.0)
+            self.disk = imagen.Disk(size=1.0,smoothing=0.0)
 
         # Get CF and src sheet shapes
         cf_x,cf_y = projection.dest.activity.shape

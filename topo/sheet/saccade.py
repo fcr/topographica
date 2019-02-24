@@ -203,7 +203,7 @@ class ShiftingGeneratorSheet(SequenceGeneratorSheet):
 
     def __init__(self,**params):
         super(ShiftingGeneratorSheet,self).__init__(**params)
-        self.fixation_point = self.bounds.centroid()
+        self._fixation_point = self.bounds.centroid()
 
     def start(self):
         super(ShiftingGeneratorSheet,self).start()
@@ -270,7 +270,7 @@ class ShiftingGeneratorSheet(SequenceGeneratorSheet):
         if self._out_of_bounds():
             self._find_saccade_in_bounds(radius,direction)
 
-        self.fixation_point = self.bounds.centroid()
+        self._fixation_point = self.bounds.centroid()
 
         if generate is None:
             generate = self.generate_on_shift
@@ -283,7 +283,7 @@ class ShiftingGeneratorSheet(SequenceGeneratorSheet):
         Move the bounds toward the fixation point.
 
         Moves the bounds toward the fixation point specified in
-        self.fixation_point, potentially with noise as specified by
+        self._fixation_point, potentially with noise as specified by
         the parameter self.fixation_jitter.
         """
         self.debug("Refixating.")
@@ -293,7 +293,7 @@ class ShiftingGeneratorSheet(SequenceGeneratorSheet):
         else:
             jitter_vec = zeros((2,))
 
-        fix = asarray(self.fixation_point)
+        fix = asarray(self._fixation_point)
         pos = asarray(self.bounds.centroid())
         refix_vec = (fix - pos) + jitter_vec
         self.bounds.translate(*refix_vec)

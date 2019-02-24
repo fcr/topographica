@@ -36,11 +36,11 @@ from command import measure_cog
 
 
 import param
-from holoviews import RGB, ElementOperation
+from holoviews import RGB, Operation
 from holoviews.operation.normalization import raster_normalization
 
 
-class colorizeHSV(ElementOperation):
+class colorizeHSV(Operation):
     """
     Given an Overlay consisting of two Image elements, colorize the
     data in the bottom Image with the data in the top Image using

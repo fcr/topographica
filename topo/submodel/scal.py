@@ -1,7 +1,7 @@
 import param
 
 import numpy as np
-import imagen as ig
+import imagen as imagen
 
 from topo.base.arrayutil import DivideWithConstant, MultiplyWithConstant
 from topo.base.projection import SheetMask, CircularMask
@@ -213,7 +213,7 @@ class ModelSCAL(EarlyVisionSCAL, ModelGCAL):
         "Specify weight initialization, response function, and learning function"
         properties = super(ModelSCAL, self).property_setup(properties)
 
-        projection.CFProjection.cf_shape=ig.Disk(smoothing=0.0)
+        projection.CFProjection.cf_shape=imagen.Disk(smoothing=0.0)
         projection.CFProjection.response_fn=optimized.CFPRF_DotProduct_cython()
         projection.CFProjection.learning_fn=optimized.CFPLF_Hebbian_cython()
         projection.CFProjection.weights_output_fns=[optimized.CFPOF_DivisiveNormalize_L1_cython()]
@@ -237,7 +237,7 @@ class ModelSCAL(EarlyVisionSCAL, ModelGCAL):
         return Model.CFProjection.params(
             delay=0.05,
             name='LateralInhibitory',
-            weights_generator=ig.random.GaussianCloud(
+            weights_generator=imagen.random.GaussianCloud(
                 gaussian_size=self.latinh_size),
             strength=self.inh_strength,
             activity_group=(0.6,
@@ -258,7 +258,7 @@ class ModelSCAL(EarlyVisionSCAL, ModelGCAL):
             delay=0.1,
             name='LRExcitatory',
             activity_group=(0.9, MultiplyWithConstant()),
-            weights_generator=ig.Gaussian(aspect_ratio=1.0, size=self.lateral_size),
+            weights_generator=imagen.Gaussian(aspect_ratio=1.0, size=self.lateral_size),
             strength=self.latexc_strength,
             learning_rate=self.latexc_lr,
             nominal_bounds_template=sheet.BoundingBox(radius=self.lateral_radius))
@@ -286,7 +286,7 @@ class ModelSCALSparse(ModelSCAL):
         params = super(ModelSCALSparse, self).lr_lateral_excitatory(src_properties,
                                                                     dest_properties)
 
-        disk = ig.Disk(smoothing=0.0)
+        disk = imagen.Disk(smoothing=0.0)
         output_fns = [CFPOF_DivisiveNormalizeL1_Sparse]
         if self.sprout_and_retract:
             cf_shape = disk
@@ -295,7 +295,7 @@ class ModelSCALSparse(ModelSCAL):
                           CFPOF_DivisiveNormalizeL1_Sparse]
         else:
             density = self.lateral_density*(1/(np.pi/4))
-            cf_shape = ig.random.BinaryUniformRandom(on_probability=min([1, density]),
+            cf_shape = imagen.random.BinaryUniformRandom(on_probability=min([1, density]),
                                                      mask_shape=disk,
                                                      name='LateralDensity')
             same_shape = False
@@ -311,7 +311,7 @@ class ModelSCALSparse(ModelSCAL):
     def V1_afferent(self, src_properties, dest_properties):
         params = super(ModelSCALSparse, self).V1_afferent(src_properties, dest_properties)
         # Adjust density for size of disk mask
-        disk = ig.Disk(smoothing=0.0)
+        disk = imagen.Disk(smoothing=0.0)
         output_fns = [CFPOF_DivisiveNormalizeL1_Sparse]
         if self.sprout_and_retract:
             cf_shape = disk
@@ -319,7 +319,7 @@ class ModelSCALSparse(ModelSCAL):
             output_fns = [CFSPOF_SproutRetract(target_sparsity=self.afferent_density)] + output_fns
         else:
             density = self.afferent_density*(1/(np.pi/4))
-            cf_shape = ig.random.BinaryUniformRandom(on_probability=min([1, density]),
+            cf_shape = imagen.random.BinaryUniformRandom(on_probability=min([1, density]),
                                                      mask_shape=disk,
                                                      name='AffDensity')
             same_shape = False
