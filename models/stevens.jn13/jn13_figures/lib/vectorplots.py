@@ -10,7 +10,7 @@ import math, json
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from analysis import KaschubeFit
+from .analysis import KaschubeFit
 
 #==============================================#
 # Overlays for OR maps and FFTs (subplots D-F) #
@@ -33,7 +33,7 @@ def pinwheel_overlay(pinwheels, contours=None, style='wo',linewidth=1):
    for imcontour in imcontours:
       plt.plot(imcontour[:,0], imcontour[:,1],'w', linewidth=linewidth)
 
-   Xs, Ys = zip(*pinwheels)
+   Xs, Ys = list(zip(*pinwheels))
    plt.plot(np.array(Xs), np.array(Ys), style)
 
    plt.xlim((0.0,1.0));         plt.ylim((0.0,1.0))
@@ -51,7 +51,7 @@ def scale_bar_overlay(normalized_width, aspect=0.05, color='w'):
    ax.patch.set_alpha(0.0)
    ax.get_xaxis().set_visible(False)
    ax.get_yaxis().set_visible(False)
-   [spine.set_visible(False) for spine in ax.spines.values()]
+   [spine.set_visible(False) for spine in list(ax.spines.values())]
    if (0.5>normalized_width>0):
        ax.add_patch(plt.Rectangle((0,0), width=normalized_width,
                                   height=1.0, facecolor=color))
@@ -70,7 +70,7 @@ def scale_box_overlay(normalized_width, offset = (0.1,0.195), color='w'):
 
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
-    [spine.set_visible(False) for spine in ax.spines.values()]
+    [spine.set_visible(False) for spine in list(ax.spines.values())]
     plt.ylim((0,1)); plt.xlim((0,1))
     return fig
 
@@ -86,13 +86,13 @@ def FFT_histogram_overlay(amplitudes, fit, fit_function = KaschubeFit,
    ax = fig.add_subplot(111)
    ax.patch.set_alpha(0.0)
    # Hide the plot spines
-   [spine.set_visible(False) for spine in ax.spines.values()]
+   [spine.set_visible(False) for spine in list(ax.spines.values())]
    ax.get_xaxis().set_visible(False)
    ax.get_yaxis().set_visible(False)
    try:
-      bins = range(len(amplitudes))
+      bins = list(range(len(amplitudes)))
    except:
-      print "Invalid list of amplitudes"
+      print("Invalid list of amplitudes")
       return fig
 
    light_blue =(0.75, 0.75, 1.0)
@@ -135,8 +135,8 @@ def stream(xvals, samples, normalization=1.0, show_std=False,
    sample counts. Retuns (xinds, mean, conf95, std)
    """
    # Cannot take mean or std of empty lists - filter first
-   xs,filtered =  zip(*[(x,grp) for (x,grp)
-                        in zip(xvals,samples) if (grp != [])])
+   xs,filtered =  list(zip(*[(x,grp) for (x,grp)
+                        in zip(xvals,samples) if (grp != [])]))
    # Normalize to given normalization constant
    normed = [[el/normalization for el in grp] for grp in filtered]
    # Means of the normalized sample groups
@@ -173,9 +173,9 @@ def map_development_plot(stabilities, selectivities, selectivity_norm,
       ax.get_xaxis().set_visible(False)
       ax.get_yaxis().set_visible(False)
 
-   if not spines: [spine.set_visible(False) for spine in ax.spines.values()]
+   if not spines: [spine.set_visible(False) for spine in list(ax.spines.values())]
 
-   xs = range(len(stabilities))
+   xs = list(range(len(stabilities)))
    selectivity_norms = [sel/selectivity_norm for sel in selectivities]
    plt.plot(xs, stabilities, '-bo', lw=2,  markersize=8)
    plt.plot(xs, selectivity_norms, '-rs', lw=2,  markersize=8)
@@ -202,7 +202,7 @@ def map_development_streams(stabilities, selectivities, selectivity_norm,
       selectivities = selectivities.transpose().tolist()
 
    assert len(selectivities) == len(stabilities)
-   xvals = range(len(stabilities))
+   xvals = list(range(len(stabilities)))
 
    fig = plt.figure(frameon=frame, figsize=figsize)
    fig.patch.set_alpha(0.0)
@@ -211,7 +211,7 @@ def map_development_streams(stabilities, selectivities, selectivity_norm,
    if not frame:
       ax.get_xaxis().set_visible(False)
       ax.get_yaxis().set_visible(False)
-   if not spines: [spine.set_visible(False) for spine in ax.spines.values()]
+   if not spines: [spine.set_visible(False) for spine in list(ax.spines.values())]
    # Plotting the 'streams'
    stab_xs,_,_,_ = stream(xvals, stabilities,
                           fillcolor='#ccccff',linecolor=(0,0,1))
@@ -241,7 +241,7 @@ def contrast_streams(contrasts, selectivities, stabilities, metrics, vlines=[]):
    stream(contrasts, selectivities, fillcolor='#ffcfcf', linecolor=(1,0,0))
    stream(contrasts, stabilities,   fillcolor='#ccccff', linecolor=(0,0,1))
    stream(contrasts, metrics,       fillcolor='#ccffcc', linecolor=(0,1,0))
-   [spine.set_visible(False) for spine in ax.spines.values()]
+   [spine.set_visible(False) for spine in list(ax.spines.values())]
    ax.get_xaxis().set_visible(False)
    ax.get_yaxis().set_visible(False)
    plt.xlim((0.0,max(contrasts)))
@@ -278,7 +278,7 @@ def animal_scatterplot(json_filename, lw=3, s=60, hline_width=0.16):
 
    ax.get_xaxis().set_visible(False)
    ax.get_yaxis().set_visible(False)
-   [spine.set_visible(False) for spine in ax.spines.values()]
+   [spine.set_visible(False) for spine in list(ax.spines.values())]
    plt.ylim((0, 12)); plt.xlim((0, 1.1))
    return fig
 
@@ -299,7 +299,7 @@ def model_scatterplot(iterables, colors=['r','b'],
    plt.axhline(y=math.pi, linestyle='dotted')
 
    for iterable, color in zip(iterables, colors):
-      units_per_hc, pw_densities = zip(*iterable)
+      units_per_hc, pw_densities = list(zip(*iterable))
       units_per_hc2 = np.array(units_per_hc)**2
 
       # Center both clusters on the given mean hypercolumn size for ferret.
@@ -313,7 +313,7 @@ def model_scatterplot(iterables, colors=['r','b'],
 
    ax.get_xaxis().set_visible(False)
    ax.get_yaxis().set_visible(False)
-   [spine.set_visible(False) for spine in ax.spines.values()]
+   [spine.set_visible(False) for spine in list(ax.spines.values())]
    plt.ylim((0, 12)); plt.xlim((0, 1.1))
    return fig
 

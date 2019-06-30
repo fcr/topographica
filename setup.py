@@ -27,7 +27,7 @@ required = {'PIL':">=1.1.6",
 
 optional = {'cython': '>=0.2',
             'weave': '>=0.15',
-            'gmpy':'>=1.0',
+            'gmpy2':'>=2.0',
             'matplotlib':'>=0.8',
             'ipython':">=0.7"}
 
@@ -55,14 +55,14 @@ if 'setuptools' in sys.modules:
     # support easy_install without depending on setuptools
     install_requires = []
     for package_list in packages_to_install:
-        install_requires+=["%s%s"%(package,version) for package,version in package_list.items()]
+        install_requires+=["%s%s"%(package,version) for package,version in list(package_list.items())]
     setup_args['install_requires']=install_requires
     setup_args['dependency_links']=["http://pypi.python.org/simple/"]
     setup_args['zip_safe']=False
 
 for package_list in packages_to_state:
     requires = []
-    requires+=["%s (%s)"%(package,version) for package,version in package_list.items()]
+    requires+=["%s (%s)"%(package,version) for package,version in list(package_list.items())]
     setup_args['requires']=requires
 
 
@@ -212,7 +212,7 @@ of `SciPy`_) for optimum performance.
 
 # Help text for dependencies not PIP
 def help_dependency(package):
-    print "The required package %s is not installed on your system." % package
+    print("The required package %s is not installed on your system." % package)
 
 if __name__ == "__main__":
     try:

@@ -55,8 +55,9 @@ class SheetView(param.Parameterized):
         else: # Necessary for backward compatibility with older snapshots.
             return self._view_list[0]
 
-    def __init__(self, (data, bounds), src_name=None, precedence=0.0,
+    def __init__(self, xxx_todo_changeme, src_name=None, precedence=0.0,
                  timestamp=-1, row_precedence=0.5,**params):
+        (data, bounds) = xxx_todo_changeme
         self.warning('Initializing old SheetView class')
         super(SheetView,self).__init__(bounds=bounds,
                                        src_name = src_name,
@@ -67,7 +68,7 @@ class SheetView(param.Parameterized):
         self.data = data
 
 
-def UnitView((data, bounds), x, y, projection, timestamp, **params):
+def UnitView(xxx_todo_changeme1, x, y, projection, timestamp, **params):
     """
     Function for backward compatibility with earlier UnitView
     component. Original docstring for UnitView:
@@ -79,6 +80,7 @@ def UnitView((data, bounds), x, y, projection, timestamp, **params):
     ('Weights',Sheet,Projection,X,Y).  The dictionary in Sheets can be
     accessed by any valid key.
     """
+    (data, bounds) = xxx_todo_changeme1
     unitview = SheetView((data, bounds), projection.src.name,
                          projection.src.precedence, timestamp = timestamp,
                          row_precedence = projection.src.row_precedence, **params)

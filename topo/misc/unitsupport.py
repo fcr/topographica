@@ -174,7 +174,7 @@ class Conversions(object):
                 val.rescale(unit[1])
                 break
             except: pass
-            if idx == len(self._base_units): print 'Cannot convert {0} to base unit.'.format(val)
+            if idx == len(self._base_units): print('Cannot convert {0} to base unit.'.format(val))
 
         return val.rescale(self._base_units[idx][1]).magnitude
 
@@ -195,7 +195,7 @@ class Conversions(object):
                     val.asUnit(unit[0])
                     break
                 except: pass
-                if idx == len(self._base_units): print 'Cannot convert {0} to base unit.'.format(val)
+                if idx == len(self._base_units): print('Cannot convert {0} to base unit.'.format(val))
             val = float(val.asUnit(self._base_units[idx][0])/self._base_units[idx][0])
 
         unum.Unum.reset(self._ut_bak)
@@ -209,7 +209,7 @@ class Conversions(object):
         Delete specified unit definition from global unum unit table.
         """
         unit_table = unum.Unum.getUnitTable()
-        if unit_key in unit_table.keys():
+        if unit_key in list(unit_table.keys()):
             del unit_table[unit_key]
         unum.Unum.reset(unit_table)
 
@@ -219,7 +219,7 @@ class Conversions(object):
         """
         Returns local unit object or if nonexistent None.
         """
-        if unit_key in self._unit_objects.keys():
+        if unit_key in list(self._unit_objects.keys()):
             return self._unit_objects[unit_key]
         else:
             return None
@@ -317,7 +317,7 @@ class Conversions(object):
         Set the local unit definitions according to stored unit definitions and using
         the Quantities unit package.
         """
-        for unit in self._unit_specs.keys():
+        for unit in list(self._unit_specs.keys()):
             self._unit_objects[unit]._conv_ref = np.array(self._unit_specs[unit][0].magnitude) * self._unit_specs[unit][0].units.simplified
         for idx,unit in enumerate(self._base_units):
             self._base_units[idx][0]._conv_ref = np.array(unit[2].magnitude) * unit[2].units.simplified
@@ -328,7 +328,7 @@ class Conversions(object):
         Set the local unit definitions according to stored unit definitions and using
         the Quantities unit package.
         """
-        for unit_key in self._unit_specs.keys():
+        for unit_key in list(self._unit_specs.keys()):
             self.del_unit(unit_key)
             unit_spec = self._unit_specs[unit_key]
             self._unit_objects[unit_key] = unum.Unum.unit(unit_key,unit_spec[0],unit_spec[1])

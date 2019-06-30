@@ -48,7 +48,7 @@ class TestSnapshots(unittest.TestCase):
 
 
         Line.x = 9.0
-        exec "z=88" in __main__.__dict__
+        exec("z=88", __main__.__dict__)
 
         topo.sim['R'].set_input_generator(Line())
         topo.sim.run(1)

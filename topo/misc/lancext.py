@@ -82,7 +82,7 @@ class topo_metadata(param.Parameterized):
 
    def __init__(self, **params):
       super(topo_metadata,self).__init__(**params)
-      self._paths = dict(zip(self.repository_names, self.paths))
+      self._paths = dict(list(zip(self.repository_names, self.paths)))
       self._info = {}
 
 
@@ -120,7 +120,7 @@ class topo_metadata(param.Parameterized):
       diff_message = "   %s  [%d files have uncommited changes as captured by git diff]"
       longest_name = max(len(name) for name in self.summarized + [np_name])
 
-      print "Topographica version control summary:\n"
+      print("Topographica version control summary:\n")
       for repo_name, message, diff in zip(self.summarized, messages, diffs):
          truncate_len = (self.max_log_length - 3)
          if len(message) > truncate_len:
@@ -128,18 +128,18 @@ class topo_metadata(param.Parameterized):
 
          sha_len = len(message.split()[0])
          modified_files = self._modified_files(diff)
-         print '   %s: %s%s' % (repo_name,
+         print('   %s: %s%s' % (repo_name,
                                 ' ' * (longest_name - len(repo_name)),
-                                message)
+                                message))
          if len(modified_files) != 0:
-            print diff_message % (' ' * (sha_len+longest_name+1),
-                                  len(modified_files))
+            print(diff_message % (' ' * (sha_len+longest_name+1),
+                                  len(modified_files)))
 
       numpy_sha = self._info['numpy_git_revision'][:7]
       np_info = (np_name,   ' ' * (longest_name-len(np_name)),
                  numpy_sha, self._info['numpy_version'],
                  '' if np_version.release else 'Non-')
-      print '   %s: %s%s Version %s (%srelease)' % np_info
+      print('   %s: %s%s Version %s (%srelease)' % np_info)
 
 
 class param_formatter(param.ParameterizedFunction):
@@ -290,7 +290,7 @@ class TopoCommand(Command):
       if ((self.analysis_fn.strip() != "default_analysis_function")
           and (type(self) == TopoCommand)
           and ('-c' not in self.topo_flag_options)):
-         raise Exception, 'Please use -c option to introduce the appropriate analysis into the namespace.'
+         raise Exception('Please use -c option to introduce the appropriate analysis into the namespace.')
 
 
    def _topo_args(self, switch_override=[]):
@@ -369,7 +369,7 @@ class TopoCommand(Command):
       dir_formatter = 'lambda p: %s' % repr(dir_format)
       derived_options['dirname_params_filter'] =  dir_formatter
 
-      return dict(options.items() + derived_options.items())
+      return dict(list(options.items()) + list(derived_options.items()))
 
 
    def __call__(self, spec, tid=None, info={}):
@@ -499,7 +499,7 @@ class BatchCollector(PrettyPrinted, param.Parameterized):
 
          unknown_params = unknown_params | (set(spec) - known_params)
 
-         if not set(self.metadata).issubset(spec.keys()):
+         if not set(self.metadata).issubset(list(spec.keys())):
             raise Exception("Metadata keys not always available: %s"
                             % ', '.join(self.metadata))
 
@@ -509,14 +509,14 @@ class BatchCollector(PrettyPrinted, param.Parameterized):
                         % ', '.join('%r' % p for p in unknown_params))
 
    def summary(self):
-      print "Collector definition summary:\n\n%s" % self.collector
+      print("Collector definition summary:\n\n%s" % self.collector)
 
    def _pprint(self, cycle=False, flat=False, annotate=False,
                onlychanged=True, level=1, tab = '   '):
       """Pretty print the collector in a declarative style."""
       split = '\n%s' % (tab*(level+1))
       spec_strs = []
-      for path, val in self.collector.items():
+      for path, val in list(self.collector.items()):
          key = repr('.'.join(path)) if isinstance(path, tuple) else 'None'
          spec_strs.append('(%s,%s%s%r),' % (key, split, tab, val))
 
@@ -566,7 +566,7 @@ class RunBatchCommand(TopoCommand):
       """
 
       formatted_spec = dict((k, repr(v) if isinstance(v,str) else str(v))
-                            for (k,v) in spec.items())
+                            for (k,v) in list(spec.items()))
       kwarg_opts = self._run_batch_kwargs(formatted_spec, tid, info)
       allopts = dict(formatted_spec,**kwarg_opts) # Override spec values if
                                                   # mistakenly included.
@@ -604,5 +604,5 @@ class RunBatchCommand(TopoCommand):
 
 
    def summary(self):
-      print("Command executable: %s" % self.executable)
+      print(("Command executable: %s" % self.executable))
       self.analysis.summary()

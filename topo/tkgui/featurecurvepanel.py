@@ -9,7 +9,7 @@ import topo
 
 from topo.base.projection import ProjectionSheet
 
-from plotgrouppanel import PlotGroupPanel
+from .plotgrouppanel import PlotGroupPanel
 
 
 ## CEBALERT: same as for featurecurveplotgroup: shares code with templateplotgrouppanel
@@ -22,14 +22,14 @@ class FeatureCurvePanel(PlotGroupPanel):
 
     @classmethod
     def valid_context(cls):
-        if topo.sim.objects(cls.sheet_type).items():
+        if list(topo.sim.objects(cls.sheet_type).items()):
             return True
         else:
             return False
 
 
     def __init__(self,master,plotgroup,**params):
-	PlotGroupPanel.__init__(self,master,plotgroup,**params)
+        PlotGroupPanel.__init__(self,master,plotgroup,**params)
 
         self.pack_param("sheet",parent=self.control_frame_3,
             on_modify=self.sheet_change,side='left',expand=1,
@@ -79,7 +79,7 @@ class FeatureCurvePanel(PlotGroupPanel):
 
 
     def populate_sheet_param(self):
-        sheets = topo.sim.objects(self.sheet_type).values()
+        sheets = list(topo.sim.objects(self.sheet_type).values())
         self.plotgroup.params()['sheet'].objects = sheets
         self.plotgroup.sheet = sheets[0] # CB: necessary?
 

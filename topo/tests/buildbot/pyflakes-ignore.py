@@ -77,7 +77,7 @@ def commonprefix(*paths):
     >>> commonprefix(os.path.join('a', 'c'), os.path.join('a', 'b'))
     'a'
     """
-    paths = map(split, paths)
+    paths = list(map(split, paths))
     if not paths: return ''
     p1 = min(paths)
     p2 = max(paths)
@@ -103,7 +103,7 @@ def check(codeString, filename):
     # First, compile into an AST and handle syntax errors.
     try:
         tree = compile(codeString, filename, "exec", _ast.PyCF_ONLY_AST)
-    except SyntaxError, value:
+    except SyntaxError as value:
         msg = value.args[0]
 
         (lineno, offset, text) = value.lineno, value.offset, value.text
@@ -113,18 +113,18 @@ def check(codeString, filename):
             # Avoid using msg, since for the only known case, it contains a
             # bogus message that claims the encoding the file declared was
             # unknown.
-            print >> sys.stderr, "%s: problem decoding source" % (filename, )
+            print("%s: problem decoding source" % (filename, ), file=sys.stderr)
         else:
             line = text.splitlines()[-1]
 
             if offset is not None:
                 offset = offset - (len(text) - len(line))
 
-            print >> sys.stderr, '%s:%d: %s' % (filename, lineno, msg)
-            print >> sys.stderr, line
+            print('%s:%d: %s' % (filename, lineno, msg), file=sys.stderr)
+            print(line, file=sys.stderr)
 
             if offset is not None:
-                print >> sys.stderr, " " * offset, "^"
+                print(" " * offset, "^", file=sys.stderr)
 
         return 1
     else:
@@ -136,10 +136,10 @@ def check(codeString, filename):
         for warning in w.messages:
             if 'redefinition of unused' in str(warning):
                 if filename.split(os.path.sep)[1] == 'submodel':
-                    print "IGNORED: " + str(warning)
+                    print("IGNORED: " + str(warning))
                     continue
             if not ignore_re.match(lines[warning.lineno - 1]):
-                print warning
+                print(warning)
                 non_ignored_messages += 1
         return non_ignored_messages
 
@@ -152,8 +152,8 @@ def checkPath(filename):
     """
     try:
         return check(file(filename, 'U').read() + '\n', filename)
-    except IOError, msg:
-        print >> sys.stderr, "%s: %s" % (filename, msg.args[1])
+    except IOError as msg:
+        print("%s: %s" % (filename, msg.args[1]), file=sys.stderr)
         return 1
 
 
@@ -174,7 +174,7 @@ def main(args, print_totals=False):
         warnings += check(sys.stdin.read(), '<stdin>')
 
     if print_totals:
-        print "Pyflakes issues found: %s" % warnings
+        print("Pyflakes issues found: %s" % warnings)
 
     raise SystemExit(warnings > 0)
 

@@ -96,7 +96,7 @@ class TestDistribution(unittest.TestCase):
 
 
     def test_lissom_statistics(self):
-        self.assertEqual(len(self.h.values()), 6)
+        self.assertEqual(len(list(self.h.values())), 6)
         self.assertAlmostEqual(self.h.total_value, 5.5)
         self.assertEqual(self.h.total_count, 16)
 

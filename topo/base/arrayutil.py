@@ -95,12 +95,12 @@ def centroid(array_2D):
     csum=0
     rmass_sum=0
     cmass_sum=0
-    for r in xrange(rows):
+    for r in range(rows):
         row_sum = array_2D[r,:].sum()
         rsum += r*row_sum
         rmass_sum += row_sum
 
-    for c in xrange(cols):
+    for c in range(cols):
         col_sum = array_2D[:,c].sum()
         csum += c*col_sum
         cmass_sum += col_sum

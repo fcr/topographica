@@ -33,8 +33,8 @@ class CFPLF_EuclideanHebbian(CFPLearningFn):
 
         cfs = iterator.flatcfs
         rows,cols = output_activity.shape
-        for r in xrange(rows):
-            for c in xrange(cols):
+        for r in range(rows):
+            for c in range(cols):
                 flati = r*cols+c
                 out = output_activity.flat[flati]
                 if out !=0:
@@ -161,8 +161,8 @@ class CFPLF_OutstarHebbian(CFPLearningFn):
                          output_activity.flat[i], cf.weights, single_connection_learning_rate)
             # Outstar normalization
             wrows,wcols = cf.weights.shape
-            for wr in xrange(wrows):
-                for wc in xrange(wcols):
+            for wr in range(wrows):
+                for wc in range(wcols):
                     outstar_wsum[wr][wc] += cf.weights[wr][wc]
 
             # CEBHACKALERT: see ConnectionField.__init__()

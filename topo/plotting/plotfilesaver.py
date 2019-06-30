@@ -90,7 +90,7 @@ class PlotGroupSaver(param.Parameterized):
 #
 # Adapted from:
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/412982
-def make_contact_sheet(imgs, (marl,mart,marr,marb), padding):
+def make_contact_sheet(imgs, xxx_todo_changeme, padding):
     """
     Make a contact sheet (image grid) from a 2D array of PIL images::
 
@@ -105,9 +105,7 @@ def make_contact_sheet(imgs, (marl,mart,marr,marb), padding):
 
     Returns a PIL image object.
     """
-    # should make sure imgs is numpy array
-
-    # CB: *** should do this in numpy without the conversion to list and back! ***
+    (marl,mart,marr,marb) = xxx_todo_changeme
     nrows,ncols = imgs.shape
     i_widths  = numpy.array([i.size[0] for i in imgs.ravel()]).reshape(nrows,ncols)
     i_heights = numpy.array([i.size[1] for i in imgs.ravel()]).reshape(nrows,ncols)

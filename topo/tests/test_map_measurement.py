@@ -87,7 +87,7 @@ def generate(plotgroup_names):
     assert topo.sim.time()==100
 
     for name in plotgroup_names:
-        print "* Generating data for plotgroups['%s']"%name
+        print("* Generating data for plotgroups['%s']"%name)
 
         views = {}
         sheet = topo.sim['V1']
@@ -105,7 +105,7 @@ def generate(plotgroup_names):
 
         filename = normalize_path('tests/%s_t%s_%s.data'%(sim_name,topo.sim.timestr(),
                                                           name.replace(' ','_')))
-        print "Saving results to %s" % (filename)
+        print("Saving results to %s" % (filename))
         f = open(filename,'wb')
         pickle.dump((topo.version,views),f)
         f.close()
@@ -114,10 +114,10 @@ def checkclose(label,version,x,y):
     errors=[]
     topo_version = "v{0}.{1}.{2} {3}".format(*version) if type(version) == tuple else version
     if not numpy.allclose(x,y,rtol=1e-05,atol=1e-07):
-        print "...%s array is no longer close to the %s version:\n%s\n---\n%s" % (label,topo_version,x,y)
+        print("...%s array is no longer close to the %s version:\n%s\n---\n%s" % (label,topo_version,x,y))
         errors=[label]
     else:
-        print '...%s array is unchanged since data was generated (%s)' % (label,topo_version)
+        print('...%s array is unchanged since data was generated (%s)' % (label,topo_version))
     return errors
 
 
@@ -130,7 +130,7 @@ def test(plotgroup_names):
 
     failing_tests=[]
     for name in plotgroup_names:
-        print "\n* Testing plotgroups['%s']:"%name
+        print("\n* Testing plotgroups['%s']:"%name)
 
         sheet = topo.sim['V1']
         _reset_views(sheet)
@@ -138,7 +138,7 @@ def test(plotgroup_names):
 
         filename = resolve_path('tests/data_maptests/%s_t%s_%s.data'%(sim_name,topo.sim.timestr(),
                                                           name.replace(' ','_')))
-        print "Reading previous results from %s" % (filename)
+        print("Reading previous results from %s" % (filename))
         f = open(filename,'r')
 
         try:
@@ -190,9 +190,9 @@ def test(plotgroup_names):
                     for val in previous_curve_dicts[curve_name][other_param]:
                         new_curves = sheet.views.Curves[curve_name.capitalize()+"Tuning"]
                         new_curves = new_curves.clone(kdims=[d(values=[]) for d in new_curves.kdims])
-                        new = new_curves[time, duration, other_param_val-0.01:other_param_val+0.01, val].values()[0].data
+                        new = list(new_curves[time, duration, other_param_val-0.01:other_param_val+0.01, val].values())[0].data
                         old = previous_curve_dicts[curve_name][other_param][val].view()[0]
                         failing_tests += checkclose("%s %s %s %s" %(sheet.name,curve_name,other_param,val),
                                                     topo_version, new, old)
 
-    if failing_tests != []: raise AssertionError, "Failed map tests: %s" % (failing_tests)
+    if failing_tests != []: raise AssertionError("Failed map tests: %s" % (failing_tests))

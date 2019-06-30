@@ -40,7 +40,7 @@ class Composer(Sheet):
         if not port in self.ports:
             self.ports[port] = {}
 
-        for k,v in config.items():
+        for k,v in list(config.items()):
             self.ports[port][k] = v
 
     def _dest_connect(self,proj,origin=(0,0)):
@@ -65,8 +65,8 @@ class Composer(Sheet):
         start_row,start_col = self.sheet2matrixidx(*self.inputs[(conn.src.name,conn.src_port)].origin)
         row_adj,col_adj = conn.src.sheet2matrixidx(0,0)
 
-        self.debug("origin (row,col) = "+`(start_row,start_col)`)
-        self.debug("adjust (row,col) = "+`(row_adj,col_adj)`)
+        self.debug("origin (row,col) = "+repr((start_row,start_col)))
+        self.debug("adjust (row,col) = "+repr((row_adj,col_adj)))
 
         start_row -= row_adj
         start_col -= col_adj

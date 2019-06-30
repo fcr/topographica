@@ -18,7 +18,7 @@ UVCDYNCTRLEXEC='/usr/bin/uvcdynctrl'
 # Pan  = -4480 to 4480
 
 def disp(args):
-    print " ".join(args)
+    print(" ".join(args))
 
 
 class PTZ(Parameterized):

@@ -18,7 +18,7 @@ if os.getenv("DISPLAY"):
     topo.tkgui.start()
 else: raise SkipTest("No DISPLAY found")
 
-from Tkinter import Frame,Toplevel
+from tkinter import Frame,Toplevel
 
 from imagen import PatternGenerator, Gaussian, Ring, Rectangle
 
@@ -262,7 +262,7 @@ class TestParameterTypeRepresentations(unittest.TestCase):
         self.assertEqual(nu_widget.tag.get(),'testA') # variable name not overwritten
 
         # check we can do some basic maths
-        exec "from math import sin,pi" in __main__.__dict__
+        exec("from math import sin,pi", __main__.__dict__)
         nu_widget.tag.delete(0,"end")
         nu_widget.tag.insert(0,"sin(pi)")
         nu_widget._tag_press_return()
@@ -391,7 +391,7 @@ class TestParameterTypeRepresentations(unittest.TestCase):
         self.assertEqual(self.f.pa,'test') # didn't get set to wrong value
 
         # Check that we can create an object from a class in __main__
-        exec "from topo.transferfn import IdentityTF" in __main__.__dict__
+        exec("from topo.transferfn import IdentityTF", __main__.__dict__)
         w.delete(0,"end")
         w.insert(0,"IdentityTF()")
         self.f._update_param_from_tkvar('pa',force=True)

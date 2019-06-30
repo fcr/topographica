@@ -467,7 +467,7 @@ class topographic_grid(xy_grid):
     def __call__(self, **params):
         p = ParamOverrides(self, params)
 
-        for sheet in topo.sim.objects(Sheet).values():
+        for sheet in list(topo.sim.objects(Sheet).values()):
             if ((p.xsheet_view_name in sheet.views.Maps) and
                     (p.ysheet_view_name in sheet.views.Maps)):
                 x = sheet.views.Maps[p.xsheet_view_name].last.data
@@ -514,7 +514,7 @@ class overlaid_plot(PylabPlotCommand):
    def __call__(self, **params):
 
        p=ParamOverrides(self,params)
-       name=p.plot_template.keys().pop(0)
+       name=list(p.plot_template.keys()).pop(0)
        plot=make_template_plot(p.plot_template,
                                p.sheet.views.Maps, p.sheet.xdensity,p.sheet.bounds,
                                p.normalize,name=p.plot_template[name])
@@ -535,7 +535,7 @@ class overlaid_plot(PylabPlotCommand):
                if (t=='arrows'):
                    s = plt.flipud(p.sheet.views.Maps[sel].view()[0])
                    scale = int(np.ceil(np.log10(len(v))))
-                   X = np.array([x for x in xrange(len(v)/scale)])
+                   X = np.array([x for x in range(len(v)/scale)])
                    v_sc = np.zeros((len(v)/scale,len(v)/scale))
                    s_sc = np.zeros((len(v)/scale,len(v)/scale))
                    for i in X:
@@ -570,7 +570,7 @@ class overlaid_plots(overlaid_plot):
         p=ParamOverrides(self,params)
 
         for template in p.plot_template:
-            for sheet in topo.sim.objects(Sheet).values():
+            for sheet in list(topo.sim.objects(Sheet).values()):
                 if getattr(sheet, "measure_maps", False):
                     super(overlaid_plots, self).__call__(sheet=sheet, plot_template=template,
                                                          overlay=p.overlay, normalize=p.normalize)
@@ -722,7 +722,7 @@ def plot_coord_mapping(mapper,sheet,style='b-'):
     hold(hold_on)
 
 import types
-__all__ = list(set([k for k,v in locals().items()
+__all__ = list(set([k for k,v in list(locals().items())
                     if isinstance(v,types.FunctionType) or
                     (isinstance(v,type) and issubclass(v,ParameterizedFunction))
                     and not v.__name__.startswith('_')]))

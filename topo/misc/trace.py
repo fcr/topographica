@@ -10,7 +10,7 @@ aligned axes.
 
 import os
 import bisect
-from itertools import izip
+
 
 from numpy import asarray
 import ImageDraw
@@ -513,9 +513,9 @@ class ActivityMovie(param.Parameterized):
                    for var in self.variables]
 
         self.frames = [MontageBitmap(bitmaps=list(bms),**self.montage_params)
-                       for bms in izip(*bitmaps)]
+                       for bms in zip(*bitmaps)]
         if self.add_timecode:
-            for t,f in izip(self.frame_times,self.frames):
+            for t,f in zip(self.frame_times,self.frames):
                 draw = ImageDraw.Draw(f.image)
                 timecode = self.timecode_fmt % (t+self.timecode_offset)
                 tw,th = draw.textsize(timecode,font=self.timecode_options.setdefault('font',TITLE_FONT))

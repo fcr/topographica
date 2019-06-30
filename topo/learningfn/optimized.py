@@ -17,7 +17,7 @@ from topo.misc.inlinec import inline,provide_unoptimized_equivalent,\
      c_header,c_decorators
 from topo.learningfn import BCMFixed
 
-from projfn import CFPLF_Trace  # pyflakes:ignore (optimized version provided)
+from .projfn import CFPLF_Trace  # pyflakes:ignore (optimized version provided)
 
 
 

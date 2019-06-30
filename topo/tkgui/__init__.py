@@ -10,13 +10,13 @@ GUIs or other types of interfaces can also be used.
 import sys
 import os
 import platform
-import Tkinter
+import tkinter
 
 import paramtk
 
 import topo
 
-from topoconsole import TopoConsole,ControllableMenu
+from .topoconsole import TopoConsole,ControllableMenu
 
 #### notes about tkgui ####
 #
@@ -147,10 +147,10 @@ def start(mainloop=False,banner=True,exit_on_quit=True):
     # quit this function before starting another Tk instance, etc)
     if console is not None: return
 
-    if banner: print 'Launching GUI'
+    if banner: print('Launching GUI')
 
     # tcl equivalent of 'if not hasattr(wm,forget)' would be better
-    if system_platform=='mac' or Tkinter.TkVersion<8.5:
+    if system_platform=='mac' or tkinter.TkVersion<8.5:
         global TK_SUPPORTS_DOCK
         TK_SUPPORTS_DOCK=False
 
@@ -170,8 +170,8 @@ def start(mainloop=False,banner=True,exit_on_quit=True):
     try:
         options_database = os.path.join(sys.path[0],"topo","tkgui","options_database")
         paramtk.root.option_readfile(options_database)
-        print "Read options database from",options_database
-    except Tkinter.TclError:
+        print("Read options database from",options_database)
+    except tkinter.TclError:
         pass
 
     console = TopoConsole(paramtk.root,exit_on_quit)

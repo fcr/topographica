@@ -75,7 +75,7 @@ def update_activity(force=False):
     some sheets providing this information may be non-trivial, e.g. if
     they need to average over recent spiking activity.
     """
-    for sheet_name in topo.sim.objects(Sheet).keys():
+    for sheet_name in list(topo.sim.objects(Sheet).keys()):
         update_sheet_activity(sheet_name, force)
 
 
@@ -162,11 +162,11 @@ class pattern_present(PatternPresentingCommand):
 
         if not p.plastic:
             # turn off plasticity everywhere
-            for sheet in topo.sim.objects(Sheet).values():
+            for sheet in list(topo.sim.objects(Sheet).values()):
                 sheet.override_plasticity_state(new_plasticity_state=False)
 
         if not p.apply_output_fns:
-            for each in topo.sim.objects(Sheet).values():
+            for each in list(topo.sim.objects(Sheet).values()):
                 if hasattr(each, 'measure_maps'):
                     if each.measure_maps:
                         each.apply_output_fns = False
@@ -175,11 +175,11 @@ class pattern_present(PatternPresentingCommand):
         generatorsheets = topo.sim.objects(GeneratorSheet)
 
         if not isinstance(p.inputs, dict):
-            for g in generatorsheets.values():
+            for g in list(generatorsheets.values()):
                 g.set_input_generator(p.inputs)
         else:
-            for each in p.inputs.keys():
-                if generatorsheets.has_key(each):
+            for each in list(p.inputs.keys()):
+                if each in generatorsheets:
                     generatorsheets[each].set_input_generator(p.inputs[each])
                 else:
                     param.Parameterized().warning(
@@ -190,7 +190,7 @@ class pattern_present(PatternPresentingCommand):
 
         durations = np.diff([0] + p.durations)
         projection_dict = dict((conn.name, conn) for conn in topo.sim.connections())
-        outputs = outputs if len(outputs) > 0 else topo.sim.objects(Sheet).keys() + projection_dict.keys()
+        outputs = outputs if len(outputs) > 0 else list(topo.sim.objects(Sheet).keys()) + list(projection_dict.keys())
 
         responses = defaultdict(dict)
         for i, d in enumerate(durations):
@@ -202,7 +202,7 @@ class pattern_present(PatternPresentingCommand):
             if p.return_responses:
 
                 for output in outputs:
-                    if output in topo.sim.objects(Sheet).keys():
+                    if output in list(topo.sim.objects(Sheet).keys()):
                         responses[(output, time)] = topo.sim[output].activity.copy()
                     elif output in projection_dict:
                         responses[(output, time)] = projection_dict[output].activity.copy()
@@ -213,11 +213,11 @@ class pattern_present(PatternPresentingCommand):
         # turn sheets' plasticity and output_fn plasticity back on if we
         # turned it off before
         if not p.plastic:
-            for sheet in topo.sim.objects(Sheet).values():
+            for sheet in list(topo.sim.objects(Sheet).values()):
                 sheet.restore_plasticity_state()
 
         if not p.apply_output_fns:
-            for each in topo.sim.objects(Sheet).values():
+            for each in list(topo.sim.objects(Sheet).values()):
                 each.apply_output_fns = True
 
         if not p.overwrite_previous:
@@ -258,7 +258,7 @@ class pattern_response(pattern_present):
        measurements. Disabled when using the Tk GUI.""")
 
     def __call__(self, inputs={}, outputs=[], current=0, total=1, **params):
-        all_input_names = topo.sim.objects(GeneratorSheet).keys()
+        all_input_names = list(topo.sim.objects(GeneratorSheet).keys())
 
         if 'default' in inputs:
             for input_name in all_input_names:
@@ -309,13 +309,13 @@ def topo_metadata_fn(input_names=[], output_names=[]):
     metadata['timestamp'] = topo.sim.time()
 
     generator_sheets = topo.sim.objects(GeneratorSheet)
-    all_sheets = dict((n, s) for n, s in topo.sim.objects(Sheet).items())
-    measurement_sheets = dict((n, s) for n, s in topo.sim.objects(Sheet).items()
+    all_sheets = dict((n, s) for n, s in list(topo.sim.objects(Sheet).items()))
+    measurement_sheets = dict((n, s) for n, s in list(topo.sim.objects(Sheet).items())
                               if hasattr(s, 'measure_maps') and s.measure_maps)
     projections = dict((conn.name, conn) for conn in topo.sim.connections())
 
     if input_names == []:
-        input_names = generator_sheets.keys()
+        input_names = list(generator_sheets.keys())
 
     metadata['inputs'] = {}
     for i in input_names:
@@ -328,7 +328,7 @@ def topo_metadata_fn(input_names=[], output_names=[]):
             topo.sim.warning('Input sheet {0} not found.'.format(i))
 
     if output_names == []:
-        output_names = measurement_sheets.keys()
+        output_names = list(measurement_sheets.keys())
 
     metadata['outputs'] = {}
     for o in output_names:
@@ -361,7 +361,7 @@ class StorageHook(param.ParameterizedFunction):
     def __call__(self, viewcontainer, **params):
         p = ParamOverrides(self, params)
         objects = dict(topo.sim.objects(), **dict([(proj.name, proj) for proj in topo.sim.connections()]))
-        for path, container in viewcontainer.data.items():
+        for path, container in list(viewcontainer.data.items()):
             label, src_name = path
             source = objects[src_name]
             if isinstance(source, Sheet):

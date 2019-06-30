@@ -6,6 +6,7 @@ import re
 import random
 import numpy
 import functools
+from functools import reduce
 
 
 
@@ -13,7 +14,7 @@ def NxN(tuple):
     """
     Converts a tuple (X1,X2,...,Xn) to a string 'X1xX2x...xXn'
     """
-    return 'x'.join([`N` for N in tuple])
+    return 'x'.join([repr(N) for N in tuple])
 
 
 
@@ -39,7 +40,7 @@ class Struct:
 
     def __repr__(self):
         #
-        args = ['%s=%s' % (k, repr(v)) for (k,v) in vars(self).items()]
+        args = ['%s=%s' % (k, repr(v)) for (k,v) in list(vars(self).items())]
         return 'Struct(%s)' % ', '.join(args)
 
 
@@ -327,7 +328,7 @@ def linearly_interpolate(table,value):
     # being available.
     else:
        lookup=table[len(table)-1]
-       print "Warning -- value %f out of range; returning maximum of %f" % (value,lookup)
+       print("Warning -- value %f out of range; returning maximum of %f" % (value,lookup))
 
     return lookup
 
@@ -421,13 +422,13 @@ class mpq(object):
         param.Parameterized().warning("gmpy.mpq('%s') replaced by fixedpoint.FixedPoint('%s')"%(args[0],n))
         return n
 """
-        exec code in module.__dict__
+        exec(code, module.__dict__)
         return module
 
 class gmpyImporter(ModuleImporter):
 
     def find_module(self, fullname, path=None):
-        if fullname == 'gmpy' or fullname.startswith('gmpy.'):
+        if fullname == 'gmpy2' or fullname.startswith('gmpy2.'):
             import param
             param.Parameterized().warning('Module "gmpy" is not available. gmpy.mpq is provided by using fixedpoint.FixedPoint.')
             g = gmpyFaker()

@@ -38,5 +38,5 @@ def provide_unoptimized_equivalent_cy(optimized_name, unoptimized_name, local_di
     if not pyximported:
         local_dict[optimized_name] = local_dict[unoptimized_name]
         if import_pyx:
-            print '%s: Cython components not available; using %s instead of %s.' \
-                  % (local_dict['__name__'], unoptimized_name, optimized_name)
+            print('%s: Cython components not available; using %s instead of %s.' \
+                  % (local_dict['__name__'], unoptimized_name, optimized_name))

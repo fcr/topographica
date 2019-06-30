@@ -59,7 +59,7 @@ def update_rgb_activities():
     """
     Make available Red, Green, and Blue activity matrices for all appropriate sheets.
     """
-    for sheet in topo.sim.objects(Sheet).values():
+    for sheet in list(topo.sim.objects(Sheet).values()):
         metadata = AttrDict(src_name=sheet.name, precedence=sheet.precedence,
                             row_precedence=sheet.row_precedence,
                             timestamp=topo.sim.time())
@@ -152,7 +152,7 @@ class measure_cog(ParameterizedFunction):
     def __call__(self, **params):
         p = ParamOverrides(self, params)
 
-        measured_sheets = [s for s in topo.sim.objects(CFSheet).values()
+        measured_sheets = [s for s in list(topo.sim.objects(CFSheet).values())
                            if hasattr(s,'measure_maps') and s.measure_maps]
 
         results = Layout()
@@ -168,7 +168,7 @@ class measure_cog(ParameterizedFunction):
                 if (proj.name == requested_proj) or \
                    (requested_proj == '' and (proj.src != sheet)):
                     cog_data = self._update_proj_cog(p, proj)
-                    for key, data in cog_data.items():
+                    for key, data in list(cog_data.items()):
                         name = proj.name[0].upper() + proj.name[1:]
                         results.set_path((key, name), data)
 
@@ -187,8 +187,8 @@ class measure_cog(ParameterizedFunction):
         xcog = np.zeros((rows, cols), np.float64)
         ycog = np.zeros((rows, cols), np.float64)
 
-        for r in xrange(rows):
-            for c in xrange(cols):
+        for r in range(rows):
+            for c in range(cols):
                 cf = proj.cfs[r, c]
                 r1, r2, c1, c2 = cf.input_sheet_slice
                 row_centroid, col_centroid = centroid(cf.weights)
@@ -237,7 +237,7 @@ options.CFView.OnOff_CFs = Options('style', cmap='RdYlBu_r', interpolation='near
 
 import types
 
-__all__ = list(set([k for k, v in locals().items()
+__all__ = list(set([k for k, v in list(locals().items())
                     if isinstance(v, types.FunctionType) or (isinstance(v, type)
                     and issubclass(v, ParameterizedFunction))
                     and not v.__name__.startswith('_')]))

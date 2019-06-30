@@ -26,8 +26,8 @@ from holoviews import Image, Layout
 from holoviews.core import BoundingBox, BoundingRegionParameter, SheetCoordinateSystem
 from topo.misc.attrdict import AttrDict
 
-from simulation import EventProcessor
-from functionfamily import TransferFn
+from .simulation import EventProcessor
+from .functionfamily import TransferFn
 
 activity_type = float64
 

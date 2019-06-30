@@ -77,5 +77,5 @@ class Series(object):
             self.value+=self.step
 
     def __call__(self):
-        return self.generator.next()
+        return next(self.generator)
 

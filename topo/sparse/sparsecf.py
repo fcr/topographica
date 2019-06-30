@@ -30,7 +30,7 @@ from topo.submodel import register_submodel_decorators
 
 use_sparse = True
 try:
-    import sparse
+    from . import sparse
 except:
     use_sparse = False
 
@@ -212,7 +212,7 @@ class CFSPOF_SproutRetract(CFSPOF_Plugin):
                 for cnx in range(dim1):
                     val_array[idx:idx+dim2] = temp_weights[cnx,:]
                     x_val = (x1+cnx) * src_y + y1
-                    x_array[idx:idx+dim2] = range(x_val,x_val+dim2)
+                    x_array[idx:idx+dim2] = list(range(x_val,x_val+dim2))
                     y_array[idx:idx+dim2] = cidx
                     idx += dim2
 
@@ -772,7 +772,7 @@ class SparseCFProjection(CFProjection):
                 for cnx in range(cn_x):
                     val_array[idx:idx+cn_y] = weights[cnx,:]
                     x_val = (x1+cnx) * src_y + y1
-                    x_array[idx:idx+cn_y] = range(x_val,x_val+cn_y)
+                    x_array[idx:idx+cn_y] = list(range(x_val,x_val+cn_y))
                     y_array[idx:idx+cn_y] = y_val
                     idx += cn_y
             nnz_idx = val_array.nonzero()
@@ -860,7 +860,7 @@ class SparseCFProjection(CFProjection):
 
 
 if not use_sparse:
-    print "WARNING: Sparse component could not be imported, replacing SparseCFProjection with regular CFProjection"
+    print("WARNING: Sparse component could not be imported, replacing SparseCFProjection with regular CFProjection")
     def SparseCFProjection(*args, **kwargs): # pyflakes:ignore (optimized version provided)
         return CFProjection(*args,**kwargs)
 

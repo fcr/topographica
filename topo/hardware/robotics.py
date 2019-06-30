@@ -20,7 +20,7 @@ import param
 from topo.base.simulation import EventProcessor
 from imagen.image import GenericImage
 
-from playerrobot import CameraDevice, PTZDevice
+from .playerrobot import CameraDevice, PTZDevice
 
 
 class CameraImage(GenericImage):

@@ -451,7 +451,7 @@ class EPConnectionEvent(Event):
         self.conn.dest.input_event(self.conn,self.data)
 
     def __repr__(self):
-        return "EPConnectionEvent(time="+`self.time`+",conn="+`self.conn`+")"
+        return "EPConnectionEvent(time="+repr(self.time)+",conn="+repr(self.conn)+")"
 
 
 class CommandEvent(Event):
@@ -469,13 +469,13 @@ class CommandEvent(Event):
         super(CommandEvent,self).__init__(time)
 
     def __repr__(self):
-        return "CommandEvent(time="+`self.time`+", command_string='"+self.command_string+"')"
+        return "CommandEvent(time="+repr(self.time)+", command_string='"+self.command_string+"')"
 
 
     def script_repr(self,imports=[],prefix="    "):
         """Generate a runnable command for creating this CommandEvent."""
         return _simulation_path+'.schedule_command('\
-               +`self.time`+',"'+self.command_string+'")'
+               +repr(self.time)+',"'+self.command_string+'")'
 
 
     def __call__(self,sim):
@@ -495,9 +495,9 @@ class CommandEvent(Event):
         param.Parameterized(name='CommandEvent').message("Running command %s",
                                                          self.command_string)
         try:
-            exec self.command_string in __main__.__dict__
+            exec(self.command_string, __main__.__dict__)
         except:
-            print "Error in scheduled command:"
+            print("Error in scheduled command:")
             raise
 
     def __test(self):
@@ -507,7 +507,7 @@ class CommandEvent(Event):
         try:
             compile(self.command_string,"CommandString","single")
         except SyntaxError:
-            print "Error in scheduled command:"
+            print("Error in scheduled command:")
             raise
 
 
@@ -525,7 +525,7 @@ class FunctionEvent(Event):
         self.fn(*self.args,**self.kw)
 
     def __repr__(self):
-        return 'FunctionEvent(%s,%s,*%s,**%s)' % (`self.time`,`self.fn`,`self.args`,`self.kw`)
+        return 'FunctionEvent(%s,%s,*%s,**%s)' % (repr(self.time),repr(self.fn),repr(self.args),repr(self.kw))
 
 class EventSequence(Event):
     """
@@ -551,7 +551,7 @@ class EventSequence(Event):
             sim.enqueue_event(new_ev)
 
     def __repr__(self):
-        return 'EventSequence(%s,%s)' % (`self.time`,`self.sequence`)
+        return 'EventSequence(%s,%s)' % (repr(self.time),repr(self.sequence))
 
 
 
@@ -593,7 +593,7 @@ class PeriodicEventSequence(EventSequence):
         sim.enqueue_event(self)
 
     def __repr__(self):
-        return 'PeriodicEventSequence(%s,%s,%s)' % (`self.time`,`self.period`,`self.sequence`)
+        return 'PeriodicEventSequence(%s,%s,%s)' % (repr(self.time),repr(self.period),repr(self.sequence))
 
 
 # CB: code that previously existed in various places now collected
@@ -684,7 +684,7 @@ class SomeTimer(param.Parameterized):
         simulation_starttime = self.simulation_time_fn()
 
         self.stop = False
-        for i in xrange(iters):
+        for i in range(iters):
             recenttimes.append(self.real_time_fn())
             length = len(recenttimes)
 
@@ -976,7 +976,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
             self.eps_to_start[:]=[]
 
         if hasattr(self,'_event_processors'):
-            for name,EP in self._event_processors.items():
+            for name,EP in list(self._event_processors.items()):
                 for c in EP.in_connections:
                     if hasattr(c,'_cleanup'):
                         c._cleanup()
@@ -1096,7 +1096,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         if not isinstance(ep,EventProcessor):
             raise TypeError("Expected EventProcessor: objects in the Simulation must be EPs.")
 
-        if ep in self._event_processors.values():
+        if ep in list(self._event_processors.values()):
             self.warning("EventProcessor "+str(ep)+" () already exists in the simulation and will not be added.")
         else:
             ep.initialized=False
@@ -1159,7 +1159,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         as tab completion in IPython.
         """
         default_dir = dir(type(self)) + list(self.__dict__)
-        return sorted(set(default_dir + self.objects().keys()))
+        return sorted(set(default_dir + list(self.objects().keys())))
 
 
     def __getattr__(self, name):
@@ -1334,7 +1334,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
                 if did_event:
                     did_event = False
                     #self.debug("Time to sleep; next event time: %s",self.timestr(self.events[0].time))
-                    for ep in self._event_processors.values():
+                    for ep in list(self._event_processors.values()):
                         ep.process_current_time()
 
                 # Set the time to the frontmost event.  Bear in mind
@@ -1414,7 +1414,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         if self.eps_to_start != []:
             self.run(0.0)
         self.event_push()
-        for ep in self._event_processors.values():
+        for ep in list(self._event_processors.values()):
             ep.state_push()
 
         param.Parameterized.state_push(self)
@@ -1427,7 +1427,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         See state_push() for more details.
         """
         self.event_pop()
-        for ep in self._event_processors.values():
+        for ep in list(self._event_processors.values()):
             ep.state_pop()
 
         param.Parameterized.state_pop(self)
@@ -1509,7 +1509,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         s.objects().keys() to see a list of the names of all objects.
         """
         return dict([(ep_name,ep)
-                     for (ep_name,ep) in self._event_processors.items()
+                     for (ep_name,ep) in list(self._event_processors.items())
                      if isinstance(ep,baseclass)])
 
 
@@ -1518,7 +1518,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         # The return value cannot be a dictionary like objects(),
         # because connection names are not guaranteed to be unique
         connlists =[o.in_connections + o.out_connections
-                    for o in self.objects().values()]
+                    for o in list(self.objects().values())]
         # Flatten one level
         conns=[]
         for cl in connlists:
@@ -1537,7 +1537,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         included, because executed commands are not kept around.
         """
         objs  = [o.script_repr(imports=imports) for o in
-                 sorted(self.objects().values(), cmp=lambda x, y: cmp(x.name,y.name))]
+                 sorted(list(self.objects().values()), cmp=lambda x, y: cmp(x.name,y.name))]
 
         # CBENHANCEMENT: could allow user to plug in a sorting
         # function.  E.g. might want to compare conns based on name

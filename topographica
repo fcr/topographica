@@ -8,10 +8,6 @@ except: pass
 
 import  sys
 
-if not (sys.version_info[0] == 2 and sys.version_info[1] == 7):
-    print "Warning: Topographica requires Python 2.7, and will not currently work with any other version."
-    sys.exit()
-
 # Process the command-line arguments
 from topo.misc.commandline import process_argv
 process_argv(sys.argv[1:])

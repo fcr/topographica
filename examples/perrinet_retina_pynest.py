@@ -24,7 +24,7 @@ import datetime
 try:
     import pyNN.nest as pyNN
 except:
-    print "Warning -- could not import pyNN; continuing anyway..."
+    print("Warning -- could not import pyNN; continuing anyway...")
 
 
 import os, tempfile
@@ -157,7 +157,7 @@ def run_retina(params):
 
     tmpdir = tempfile.mkdtemp()
 
-    print "Setting up simulation"
+    print("Setting up simulation")
 
     pyNN.Timer.start() # start timer on construction
     pyNN.setup(timestep=params['dt'],max_delay=params['syn_delay'])
@@ -199,7 +199,7 @@ def run_retina(params):
     # reads out time used for building
     buildCPUTime= pyNN.Timer.elapsedTime()
 
-    print "Running simulation"
+    print("Running simulation")
 
     pyNN.Timer.start() # start timer on construction
     pyNN.run(params['simtime'])
@@ -211,15 +211,15 @@ def run_retina(params):
     out_ON_DATA = tmpfile2spikelist(out_ON_filename,params['dt'])
     out_OFF_DATA = tmpfile2spikelist(out_OFF_filename,params['dt'])
 
-    print "\nRetina Network Simulation:"
-    print(params['description'])
-    print "Number of Neurons  : ", N**2
-    print "Output rate  (ON) : ", out_ON.meanSpikeCount(), \
-        "spikes/neuron in ", params['simtime'], "ms"
-    print "Output rate (OFF)   : ", out_OFF.meanSpikeCount(), \
-        "spikes/neuron in ",params['simtime'], "ms"
-    print "Build time         : ", buildCPUTime, "s"
-    print "Simulation time    : ", simCPUTime, "s"
+    print("\nRetina Network Simulation:")
+    print((params['description']))
+    print("Number of Neurons  : ", N**2)
+    print("Output rate  (ON) : ", out_ON.meanSpikeCount(), \
+        "spikes/neuron in ", params['simtime'], "ms")
+    print("Output rate (OFF)   : ", out_OFF.meanSpikeCount(), \
+        "spikes/neuron in ",params['simtime'], "ms")
+    print("Build time         : ", buildCPUTime, "s")
+    print("Simulation time    : ", simCPUTime, "s")
 
     return out_ON_DATA,out_OFF_DATA
 
@@ -241,5 +241,5 @@ if __name__ == '__main__':
     neuron_id=out_OFF_DATA[:,1]
     pylab.plot(spike_time,neuron_id,'.b')
     pylab.axis('tight')
-    print spikelist2spikematrix(out_ON_DATA, params['N'],
-                                params['simtime']/params['dt'], params['dt'])
+    print(spikelist2spikematrix(out_ON_DATA, params['N'],
+                                params['simtime']/params['dt'], params['dt']))

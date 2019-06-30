@@ -151,7 +151,7 @@ class JointNormalizingCFSheet(CFSheet):
         If active_units_mask is True, only active units will have
         their weights normalized.
         """
-        for key,projlist in self._grouped_in_projections('JointNormalize').items():
+        for key,projlist in list(self._grouped_in_projections('JointNormalize').items()):
             if key == None:
                 normtype='Individually'
             else:
@@ -361,8 +361,8 @@ class SettlingCFSheet(JointNormalizingCFSheet):
     # print the weights of a unit
     def printwts(self,x,y):
         for proj in self.in_connections:
-            print proj.name, x, y
-            print proj.cfs[x,y].weights
+            print(proj.name, x, y)
+            print(proj.cfs[x,y].weights)
 
 
     def state_push(self,**args):
@@ -393,7 +393,7 @@ class SettlingCFSheet(JointNormalizingCFSheet):
 
 
 
-_public = list(set([_k for _k,_v in locals().items() if isinstance(_v,type) and issubclass(_v,Sheet)]))
+_public = list(set([_k for _k,_v in list(locals().items()) if isinstance(_v,type) and issubclass(_v,Sheet)]))
 _public += [
     "compute_joint_norm_totals",
     "BoundingBox",
@@ -403,7 +403,7 @@ _public += [
 # Automatically discover all .py files in this directory.
 import os,fnmatch
 __all__ = _public + [f.split('.py')[0] for f in os.listdir(__path__[0]) if fnmatch.fnmatch(f,'[!._]*.py')]
-del f,os,fnmatch
+del os,fnmatch
 
 # By default, avoid loading modules that rely on external libraries
 # that might not be present on this system.

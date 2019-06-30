@@ -107,8 +107,8 @@ class SLISSOM(SettlingCFSheet):
         # period
         rows,cols = self.activity.shape
 
-        for r in xrange(rows):
-            for c in xrange(cols):
+        for r in range(rows):
+            for c in range(cols):
 
                 thresh = self.threshold + self.dynamic_threshold[r,c]
 

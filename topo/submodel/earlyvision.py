@@ -116,8 +116,8 @@ class VisualInputModel(SensoryModel):
         # The default period for most Topographica models is 1.0
         properties['period'] = 1.0 if self.period is None else self.period
         properties['binocular'] = 'od' in self.dims or 'dy' in self.dims
-        properties['SF']=range(1,self.sf_channels+1) if 'sf' in self.dims else [1]
-        properties['lags'] = range(self.num_lags) if 'dr' in self.dims else [0]
+        properties['SF']=list(range(1,self.sf_channels+1)) if 'sf' in self.dims else [1]
+        properties['lags'] = list(range(self.num_lags)) if 'dr' in self.dims else [0]
 
         if 'dr' in self.dims and not numbergen.RandomDistribution.time_dependent:
             numbergen.RandomDistribution.time_dependent = True

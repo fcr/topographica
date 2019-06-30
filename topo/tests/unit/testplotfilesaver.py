@@ -18,7 +18,7 @@ from topo.plotting.plotgroup import save_plotgroup
 
 
 import __main__
-exec "from topo.command.analysis import *" in __main__.__dict__
+exec("from topo.command.analysis import *", __main__.__dict__)
 
 from nose.tools import istest, nottest
 
@@ -28,7 +28,7 @@ class TestPlotGroupSaverBase(unittest.TestCase):
     def exists(self,name):
         target = os.path.join(normalize_path.prefix,name)
         files = glob.glob(os.path.join(normalize_path.prefix,"*"))
-        self.assert_(os.path.exists(target),
+        self.assertTrue(os.path.exists(target),
                      "'%s' not among '%s'"%(os.path.basename(target),
                                             [os.path.basename(f) for f in files]))
 

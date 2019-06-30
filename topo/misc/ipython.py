@@ -37,13 +37,13 @@ def prompt(message, default, options, skip=False):
     show_options[default_index] = show_options[default_index].upper()
     choices ="/".join(show_options)
     prompt_msg = "%s (%s): " % (message, choices)
-    response = raw_input(prompt_msg)
+    response = input(prompt_msg)
     if response =="":
         return default.lower()
     while response.lower() not in options:
         msg = ("Response '%s' not in available options (%s). Please try again: "
                % (response, choices))
-        response = raw_input(msg)
+        response = input(msg)
     return response.lower()
 
 
@@ -91,7 +91,7 @@ def export_notebook(notebook, output_path=None, ext='.ty', identifier='_export_'
     if stale_time:
         modified_time = time.time() - os.path.getmtime(notebook)
         if  modified_time > stale_time:
-            print "Notebook last saved %.1f seconds ago." % modified_time
+            print("Notebook last saved %.1f seconds ago." % modified_time)
 
     new_contents = "\n".join(lines)
     overwrite = os.path.isfile(output_path)
@@ -102,7 +102,7 @@ def export_notebook(notebook, output_path=None, ext='.ty', identifier='_export_'
 
     if diff and overwrite:
         deltas =difflib.unified_diff(old_contents.splitlines(), new_contents.splitlines(), lineterm='')
-        print '\n'.join(list(deltas))
+        print('\n'.join(list(deltas)))
 
 
 @magics_class

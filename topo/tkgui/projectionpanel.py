@@ -6,7 +6,7 @@ PlotgroupPanels for displaying ProjectionSheet plotgroups.
 import ImageTk
 ### JCALERT! Try not to have to use chain and delete this import.
 from itertools import chain
-from Tkinter import Canvas
+from tkinter import Canvas
 from numpy import sometrue
 
 import param
@@ -16,7 +16,7 @@ from topo.base.cf import CFProjection
 from topo.base.projection import ProjectionSheet, Projection
 from topo.base.generatorsheet import GeneratorSheet
 
-from templateplotgrouppanel import SheetPanel
+from .templateplotgrouppanel import SheetPanel
 
 
 
@@ -50,8 +50,8 @@ class ProjectionSheetPanel(SheetPanel):
         Return True if there is at least one instance of
         projection_type among all projections in the simulation.
         """
-        for p in chain(*[sheet.projections().values()
-                         for sheet in topo.sim.objects(cls.sheet_type).values()]):
+        for p in chain(*[list(sheet.projections().values())
+                         for sheet in list(topo.sim.objects(cls.sheet_type).values())]):
             if isinstance(p,cls.projection_type):
                 return True
 
@@ -79,7 +79,7 @@ class ProjectionSheetPanel(SheetPanel):
 
 
     def populate_sheet_param(self):
-        sheets = [s for s in topo.sim.objects(self.sheet_type).values()
+        sheets = [s for s in list(topo.sim.objects(self.sheet_type).values())
                   if sometrue([isinstance(p,self.projection_type)
                                for p in s.in_connections])]
         self.plotgroup.params()['sheet'].objects = sheets
@@ -219,7 +219,7 @@ class PlotMatrixPanel(ProjectionSheetPanel):
                          for image in self.zoomed_images]
 
         # Lay out images
-        for i,image,canvas in zip(range(len(self.zoomed_images)),
+        for i,image,canvas in zip(list(range(len(self.zoomed_images))),
                                   self.zoomed_images,self.canvases):
             canvas.grid(row=i//self.plotgroup.proj_plotting_shape[1],
                         column=i%self.plotgroup.proj_plotting_shape[1],
@@ -255,7 +255,7 @@ class RFProjectionPanel(PlotMatrixPanel):
         self.populate_input_sheet_param()
 
     def populate_input_sheet_param(self):
-        sheets = topo.sim.objects(GeneratorSheet).values()
+        sheets = list(topo.sim.objects(GeneratorSheet).values())
         self.plotgroup.params()['input_sheet'].objects = sheets
         self.plotgroup.input_sheet=sheets[0]
 
@@ -290,7 +290,7 @@ class ProjectionPanel(PlotMatrixPanel):
 
 
     def populate_projection_param(self):
-        prjns = [proj for proj in self.plotgroup.sheet.projections().values()
+        prjns = [proj for proj in list(self.plotgroup.sheet.projections().values())
                  if isinstance(proj,self.projection_type)]
         self.plotgroup.params()['projection'].objects = prjns
         self.plotgroup.projection = prjns[0] # CB: necessary?

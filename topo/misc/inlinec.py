@@ -144,7 +144,7 @@ try:
 except ImportError:
     # CEBALERT: where does 'caution' fit in our warnings system? (Also
     # used in other places in this file.)
-    print 'Caution: Unable to import Weave.  Will use non-optimized versions of most components.'
+    print('Caution: Unable to import Weave.  Will use non-optimized versions of most components.')
 
 
 if weave_imported:
@@ -153,8 +153,8 @@ if weave_imported:
         # to force recompilation each time
         inline('double x=%s;'%random.random())
         compiled = True
-    except Exception, e:
-        print "Caution: Unable to use Weave to compile: \"%s\". Will use non-optimized versions of most components."%str(e)
+    except Exception as e:
+        print("Caution: Unable to use Weave to compile: \"%s\". Will use non-optimized versions of most components."%str(e))
 
 # Flag available for all to use to test whether to use the inline
 # versions or not.
@@ -190,11 +190,11 @@ def provide_unoptimized_equivalent(optimized_name, unoptimized_name, local_dict)
     if not optimized:
         local_dict[optimized_name] = local_dict[unoptimized_name]
         if warn_for_each_unoptimized_component:
-            print '%s: Inline-optimized components not available; using %s instead of %s.' \
-                  % (local_dict['__name__'], optimized_name, unoptimized_name)
+            print('%s: Inline-optimized components not available; using %s instead of %s.' \
+                  % (local_dict['__name__'], optimized_name, unoptimized_name))
 
 if not optimized and not warn_for_each_unoptimized_component:
-    print "Note: Inline-optimized components are currently disabled; see topo.misc.inlinec"
+    print("Note: Inline-optimized components are currently disabled; see topo.misc.inlinec")
 
 
 # Definitions useful for working with optimized Python code;

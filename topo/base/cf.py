@@ -26,64 +26,21 @@ from holoviews import GridSpace, Dimension, HoloMap, Layout
 from topo.misc.attrdict import AttrDict
 from holoviews.core import BoundingBox, BoundingRegionParameter, Slice
 
-import patterngenerator
-from patterngenerator import PatternGenerator
-from functionfamily import TransferFn,IdentityTF
-from functionfamily import LearningFn,Hebbian,IdentityLF
-from functionfamily import ResponseFn,DotProduct
-from functionfamily import CoordinateMapperFn,IdentityMF
-from projection import Projection,ProjectionSheet
-from sheetview import CFView
+import imagen.patterngenerator as patterngenerator
+from imagen.patterngenerator import PatternGenerator
+from .functionfamily import TransferFn,IdentityTF
+from .functionfamily import LearningFn,Hebbian,IdentityLF
+from .functionfamily import ResponseFn,DotProduct
+from .functionfamily import CoordinateMapperFn,IdentityMF
+from .projection import Projection,ProjectionSheet
+from .sheetview import CFView
 
 
 def simple_vectorize(fn,num_outputs=1,output_type=object,doc=''):
     """
-    Wrapper for Numpy.vectorize to make it work properly with different Numpy versions.
+    Wrapper for Numpy.vectorize.
     """
-
-    # Numpy.vectorize returns a callable object that applies the given
-    # fn to a list or array.  By default, Numpy.vectorize will call
-    # the supplied fn an extra time to determine the output types,
-    # which is a big problem for any function with side effects.
-    # Supplying arguments is supposed to avoid the problem, but as of
-    # Numpy 1.6.1 (and apparently since at least 1.1.1) this feature
-    # was broken:
-    #
-    # $ ./topographica -c "def f(x): print x" -c "import numpy" -c "numpy.vectorize(f,otypes=numpy.sctype2char(object)*1)([3,4])"
-    # 3
-    # 3
-    # 4
-    #
-    # Numpy 1.7.0 seems to fix the problem:
-    # $ ./topographica -c "def f(x): print x" -c "import numpy" -c "numpy.vectorize(f,otypes=numpy.sctype2char(object)*1)([3,4])"
-    # 3
-    # 4
-    #
-    # To make it work with all versions of Numpy, we use
-    # numpy.vectorize as-is for versions > 1.7.0, and a nasty hack for
-    # previous versions.
-
-    # Simple Numpy 1.7.0 version:
-    if int(np.version.version[0]) >= 1 and int(np.version.version[2]) >= 7:
-        return np.vectorize(fn,otypes=np.sctype2char(output_type)*num_outputs, doc=doc)
-
-    # Otherwise, we have to mess with Numpy's internal data structures to make it work.
-    vfn = np.vectorize(fn,doc=doc)
-    vfn.nout=num_outputs # number of outputs of fn
-    output_typecode = np.sctype2char(output_type)
-    vfn.otypes=output_typecode*num_outputs # typecodes of outputs of fn
-    import inspect
-
-    try:
-        fn_code = fn.func_code if hasattr(fn,'func_code') else fn.__call__.func_code
-    except:
-        raise TypeError("Couldn't find code of %s"%fn)
-
-    fn_args = inspect.getargs(fn_code)[0]
-    extra = 1 if fn_args[0]=='self' else 0
-    vfn.lastcallargs=len(fn_args)-extra # num args of fn
-    return vfn
-
+    return np.vectorize(fn,otypes=np.sctype2char(output_type)*num_outputs, doc=doc)
 
 
 #: Specified explicitly when creating weights matrix - required
@@ -744,7 +701,7 @@ class CFProjection(Projection):
             r, t = self.dest.closest_cell_center(lbrt[2], lbrt[3])
         x, y = np.meshgrid(np.linspace(l, r, cols),
                            np.linspace(b, t, rows))
-        coords = zip(x.flat, y.flat)
+        coords = list(zip(x.flat, y.flat))
 
         grid_items = {}
         for x, y in coords:
@@ -1098,8 +1055,8 @@ class ResizableCFProjection(CFProjection):
         rows,cols = cfs.shape
         output_fns = [wof.single_cf_fn for wof in self.weights_output_fns]
 
-        for r in xrange(rows):
-            for c in xrange(cols):
+        for r in range(rows):
+            for c in range(cols):
                 xcf,ycf = self.X_cf[0,c],self.Y_cf[r,0]
                 # CB: listhack - loop is candidate for replacement by numpy fn
                 self._change_cf_bounds(cfs[r,c],input_sheet=self.src,

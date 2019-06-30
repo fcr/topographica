@@ -174,7 +174,7 @@ class SVGUtils(object):
             if (name is None) or (name[-4:] != '.svg'): continue
             component_path = os.path.join(basepath, name)
             if not os.path.exists(component_path):
-               print 'Skipping relative link %r (file not found)' % name
+               print('Skipping relative link %r (file not found)' % name)
             component_svg = SVGUtils.load(component_path)
             # Following 2 lines fixes pyplot generated SVG.
             w,h = SVGUtils.size(component_svg)
@@ -189,7 +189,7 @@ class SVGUtils(object):
                offset = re.split("\(|,|\)", op)[1:3]
                x_offset, y_offset = (float(el) for el in offset)
             else: 
-               print "Please apply transformation to rectangle %r." % name
+               print("Please apply transformation to rectangle %r." % name)
 
             rect.clear(); rect.tag = 'g'
             rect[:] = SVGUtils.group(component_svg)
@@ -236,7 +236,7 @@ class SVGUtils(object):
                prefix = 'data:image/%s;base64,' % extension
                el.attrib[href_pattern] = prefix + encoder(im_path)
             elif (extension in supported_extensions):
-               print 'Skipping relative link %r (file not found)' % href
+               print('Skipping relative link %r (file not found)' % href)
       return SVGUtils.inkscape_layers(svg, embed_raster)
 
    @staticmethod

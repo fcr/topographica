@@ -19,7 +19,7 @@ def _check_proj(s,p,N):
         for i in range(0,N,step):
             for j in range(0,N,step):
                 check_size(s,p,(i,j),display=verbose)
-    except AssertionError, st:
+    except AssertionError as st:
         return "%s: %s\n"%(s,st)
 
 
@@ -28,7 +28,7 @@ def _check_proj(s,p,N):
             for j in range(0,N,step):
                 check_weights(s,p,(i,j),display=verbose)
         return 0
-    except AssertionError, st:
+    except AssertionError as st:
         return "%s: %s\n"%(s,st)
 
 
@@ -39,13 +39,13 @@ def check(weights=True,activities=True):
     if weights:
         try:
             check_all_weights()
-        except AssertionError,we:
+        except AssertionError as we:
             errs+=we.args[0]+"\n"
 
     if activities:
         try:
             check_all_activities()
-        except AssertionError,ae:
+        except AssertionError as ae:
             errs+=ae.args[0]+"\n"
 
     if len(errs)>0:
@@ -54,12 +54,12 @@ def check(weights=True,activities=True):
 
 
 def check_all_weights():
-    print "t=%s: Checking weights..."%topo.sim.time()
+    print("t=%s: Checking weights..."%topo.sim.time())
 
     e = ""
     # assumes 'Primary'
     for proj in topo.sim['Primary'].projections():
-        print "...%s"%proj
+        print("...%s"%proj)
         o =_check_proj('Primary',proj,BaseN)
         if o!=0:e+=o
     if len(e)>0:
@@ -67,17 +67,17 @@ def check_all_weights():
 
 
 def check_all_activities():
-    print "t=%s: Checking activities..."%topo.sim.time()
+    print("t=%s: Checking activities..."%topo.sim.time())
 
-    sheets = sorted(topo.sim.objects().values(), cmp=lambda x, y:
+    sheets = sorted(list(topo.sim.objects().values()), cmp=lambda x, y:
                     cmp(x.precedence,
                         y.precedence))
     errs = ""
     for s in sheets:
-        print "...%s"%s.name
+        print("...%s"%s.name)
         try:
             check_activities(s.name,display=verbose)
-        except AssertionError, st:
+        except AssertionError as st:
             errs+=st.args[0]+"\n"
 
     if len(errs)>0:

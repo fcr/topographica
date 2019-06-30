@@ -12,7 +12,7 @@ become available for any model.
 
 import param
 
-from simulation import EventProcessor,EPConnectionEvent
+from .simulation import EventProcessor,EPConnectionEvent
 
 
 class PulseGenerator(EventProcessor):
@@ -95,7 +95,7 @@ class SumUnit(EventProcessor):
             self.send_output(data=self.value)
             self.value = 0.0
 
-__all__ = list(set(k for k,v in locals().items()
+__all__ = list(set(k for k,v in list(locals().items())
                     if isinstance(v, type)
                     and issubclass(v, EventProcessor)
                     and v is not EventProcessor

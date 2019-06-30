@@ -11,8 +11,8 @@ Originally written by Alan Lindsay.
 from inspect import getdoc
 import math
 
-from Tkinter import Button, Label, Frame, TOP, LEFT, RIGHT, BOTTOM, E, LAST, FIRST, OptionMenu, StringVar,Canvas,X,GROOVE,RAISED,Checkbutton,Menu,Scrollbar, YES,Y,END,BOTH
-from tkFileDialog import asksaveasfilename
+from tkinter import Button, Label, Frame, TOP, LEFT, RIGHT, BOTTOM, E, LAST, FIRST, OptionMenu, StringVar,Canvas,X,GROOVE,RAISED,Checkbutton,Menu,Scrollbar, YES,Y,END,BOTH
+from tkinter.filedialog import asksaveasfilename
 
 
 import param
@@ -607,7 +607,7 @@ class ModelEditor(parameterized.Parameterized):
         # get a list of all the objects in the simulation
         sim = self.canvas.simulation
         node_dictionary = sim.objects(EventProcessor)
-        node_list = node_dictionary.values()
+        node_list = list(node_dictionary.values())
 
         # create the editor covers for the nodes
         for node in node_list:
@@ -770,7 +770,7 @@ class NodeTool(Frame):
         # gets list of all the available sheets.
         self.sheet_list = param.concrete_descendents(Sheet)
 
-        sheet_list = names_sorted_by_precedence(self.sheet_list.values())
+        sheet_list = names_sorted_by_precedence(list(self.sheet_list.values()))
 
         ## menu with list of available sheets
         self.option_var = StringVar()
@@ -873,7 +873,7 @@ class ConnectionTool(Frame):
         self.doc = 'Use the connection tool to\ndrag connections between objects'
         # gets list of all the available projections.
         self.proj_list = param.concrete_descendents(Projection)
-        proj_list = names_sorted_by_precedence(self.proj_list.values())
+        proj_list = names_sorted_by_precedence(list(self.proj_list.values()))
 
 
         ## menu with list of available projections
@@ -921,7 +921,7 @@ class ConnectionTool(Frame):
                 con = sim.connect(from_node.name,to_node.name,connection_type=con_type,name=con_name)
             else:
                 con = sim.connect(from_node.name,to_node.name,connection_type=con_type)
-        except Exception, e:
+        except Exception as e:
             param.Parameterized().warning("Unable to connect these sheets with the given "+ self.current_option + " (" + str(e) +").")
             editor_connection.remove()
             return False

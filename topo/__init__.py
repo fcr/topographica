@@ -135,23 +135,23 @@ def _numpy_ufunc_pickle_support():
     # Code from Robert Kern; see:
     #http://news.gmane.org/find-root.php?group=gmane.comp.python.numeric.general&article=13400
     from numpy import ufunc
-    import copy_reg
+    import copyreg
 
     def ufunc_pickler(ufunc):
         """Return the ufunc's name"""
         return ufunc.__name__
 
-    copy_reg.pickle(ufunc,ufunc_pickler)
+    copyreg.pickle(ufunc,ufunc_pickler)
 
 _numpy_ufunc_pickle_support()
 
 
 def _mpq_pickle_support():
-    """Allow instances of gmpy.mpq to pickle."""
-    from gmpy import mpq
+    """Allow instances of gmpy2.mpq to pickle."""
+    from gmpy2 import mpq
     mpq_type = type(mpq(1,10)) # gmpy doesn't appear to expose the type another way
-    import copy_reg
-    copy_reg.pickle(mpq_type,lambda q: (mpq,(q.digits(),)))
+    import copyreg
+    copyreg.pickle(mpq_type,lambda q: (mpq,(q.digits(),)))
 
 
 
@@ -163,12 +163,12 @@ def _instance_method_pickle_support():
     # only work with pickle (not cPickle):
     # http://code.activestate.com/recipes/572213/
     def _pickle_instance_method(mthd):
-        mthd_name = mthd.im_func.__name__
-        obj = mthd.im_self
+        mthd_name = mthd.__func__.__name__
+        obj = mthd.__self__
         return getattr, (obj,mthd_name)
 
-    import copy_reg, types
-    copy_reg.pickle(types.MethodType, _pickle_instance_method)
+    import copyreg, types
+    copyreg.pickle(types.MethodType, _pickle_instance_method)
 
 _instance_method_pickle_support()
 
@@ -183,7 +183,7 @@ def fixedpoint_time_type(x, precision=4):
     return fixedpoint.FixedPoint(x, precision)
 
 try:
-    import gmpy
+    import gmpy2 as gmpy
     _time_type = gmpy.mpq
     _mpq_pickle_support()
 except ImportError:
@@ -241,7 +241,7 @@ This program is free, open-source software available under the BSD
 license (http://www.opensource.org/licenses/bsd-license.php).
 """%(release,version)
     if display:
-        print ABOUT_TEXT
+        print(ABOUT_TEXT)
     else:
         return ABOUT_TEXT
 

@@ -4,11 +4,10 @@ Extensions to pickle allowing items in __main__ to be saved.
 
 # CEBALERT: move into snapshots.py?
 
-import new
 import pickle
 import types
 import __main__
-from StringIO import StringIO
+from io import StringIO
 
 import copy
 
@@ -45,12 +44,12 @@ class PickleMain(object):
         # modifications will affect only this instance.
         self.pickler.dispatch = copy.copy(self.pickler.dispatch)
 
-        self.pickler.dispatch[new.code] = save_code
-        self.pickler.dispatch[new.function] = save_function
+        self.pickler.dispatch[types.CodeType] = save_code
+        self.pickler.dispatch[types.FunctionType] = save_function
         self.pickler.dispatch[dict] = save_module_dict
-        self.pickler.dispatch[new.classobj] = save_classobj
-        self.pickler.dispatch[new.instancemethod] = save_instancemethod
-        self.pickler.dispatch[new.module] = save_module
+        self.pickler.dispatch[types.new_class] = save_classobj
+        self.pickler.dispatch[types.MethodType] = save_instancemethod
+        self.pickler.dispatch[types.ModuleType] = save_module
         self.pickler.dispatch[type] = save_type
 
         # CB: maybe this should be registered from elsewhere
@@ -62,13 +61,13 @@ class PickleMain(object):
         self._create_pickler()
 
         bytecode = {}
-        for name,obj in __main__.__dict__.items():
+        for name,obj in list(__main__.__dict__.items()):
             if not name.startswith('_'):
                 if isinstance(obj,types.FunctionType) or isinstance(obj,type):
                     # (could be extended to other types, I guess
                     if _name_is_main(obj):
                         #CB: how do I print out info via Parameterized?
-                        print "%s is defined in __main__: saving bytecode."%name
+                        print("%s is defined in __main__: saving bytecode."%name)
                         bytecode[name] = obj
 
         self.pickler.dump(bytecode)
@@ -78,8 +77,8 @@ class PickleMain(object):
     def __setstate__(self,state):
         bytecode = pickle.load(StringIO(state['pickled_bytecode'].getvalue()))
 
-        for name,obj in bytecode.items():
-            print "%s restored from bytecode into __main__"%name
+        for name,obj in list(bytecode.items()):
+            print("%s restored from bytecode into __main__"%name)
             __main__.__dict__[name] = obj
 
 
@@ -109,13 +108,13 @@ def save_code(self, obj):
         obj.co_consts, obj.co_names, obj.co_varnames, obj.co_filename, obj.co_name,
         obj.co_firstlineno, obj.co_lnotab, obj.co_freevars, obj.co_cellvars
     )
-    self.save_reduce(new.code, args, obj=obj)
+    self.save_reduce(types.CodeType, args, obj=obj)
 
 def save_function(self, obj):
     """ Save functions by value if they are defined interactively """
-    if _name_is_main(obj) or obj.func_name == '<lambda>':
-        args = (obj.func_code, obj.func_globals, obj.func_name, obj.func_defaults, obj.func_closure)
-        self.save_reduce(new.function, args, obj=obj)
+    if _name_is_main(obj) or obj.__name__ == '<lambda>':
+        args = (obj.__code__, obj.__globals__, obj.__name__, obj.__defaults__, obj.__closure__)
+        self.save_reduce(types.FunctionType, args, obj=obj)
     else:
         self.save_global(obj)
         #pickle.Pickler.save_global(self, obj)
@@ -137,7 +136,7 @@ def save_classobj(self, obj):
     """ Save an interactively defined classic class object by value """
     if _name_is_main(obj):
         args = (obj.__name__, obj.__bases__, obj.__dict__)
-        self.save_reduce(new.classobj, args, obj=obj)
+        self.save_reduce(types.new_class, args, obj=obj)
     else:
         name = str(obj).split('.')[-1]  # CEB: hack to find classic class name
         self.save_global(obj,name)
@@ -146,8 +145,8 @@ def save_classobj(self, obj):
 def save_instancemethod(self, obj):
     """ Save an instancemethod object """
     # Instancemethods are re-created each time they are accessed so this will not be memoized
-    args = (obj.im_func, obj.im_self, obj.im_class)
-    self.save_reduce(new.instancemethod, args)
+    args = (obj.__func__, obj.__self__, obj.__self__.__class__)
+    self.save_reduce(types.MethodType, args)
 
 def save_module(self, obj):
     """ Save modules by reference, except __main__ which also gets its contents saved by value """
@@ -159,7 +158,7 @@ def save_module(self, obj):
         save_global_byname(self, obj, *obj.__name__.rsplit('.', 1))
 
 def save_type(self, obj):
-    if getattr(new, obj.__name__, None) is obj:
+    if getattr(types, obj.__name__, None) is obj:
         # Types in 'new' module claim their module is '__builtin__' but are not actually there
         save_global_byname(self, obj, 'new', obj.__name__)
     elif _name_is_main(obj):

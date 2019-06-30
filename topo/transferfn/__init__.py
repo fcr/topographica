@@ -501,10 +501,10 @@ class ScalingTF(TransferFnWithState):
 
         x *= self.sf
 
-_public = list(set([_k for _k,_v in locals().items() if isinstance(_v,type) and issubclass(_v,TransferFn)]))
+_public = list(set([_k for _k,_v in list(locals().items()) if isinstance(_v,type) and issubclass(_v,TransferFn)]))
 
 
 # Automatically discover all .py files in this directory.
 import os,fnmatch
 __all__ = _public + [f.split('.py')[0] for f in os.listdir(__path__[0]) if fnmatch.fnmatch(f,'[!._]*.py')]
-del f,os,fnmatch
+del os,fnmatch

@@ -9,13 +9,13 @@ def create_topographica_bat(python,location):
     f = open(bat_path,'w')
     f.write("@"+python+" "+location+r"\topographica %*")
     f.close()
-    print "Created %s"%bat_path
+    print("Created %s"%bat_path)
     return bat_path
 
 
 # CEBALERT: needs administrator permissions
 def _create_association(python,scriptloc,ico_path):
-    from _winreg import OpenKey,HKEY_CLASSES_ROOT,KEY_SET_VALUE,REG_SZ,SetValue
+    from winreg import OpenKey,HKEY_CLASSES_ROOT,KEY_SET_VALUE,REG_SZ,SetValue
 
     bat_path = create_topographica_bat(python,scriptloc)
 

@@ -12,8 +12,8 @@ paths = ['../external/imagen/', '../external/lancet/', '../external/param/',
 add_paths(paths)
 
 # General information about the project.
-project = u'Topographica'
-copyright = u'2013, IOAM'
+project = 'Topographica'
+copyright = '2013, IOAM'
 ioam_project = 'topographica'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -59,8 +59,8 @@ htmlhelp_basename = project + 'doc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', project + '.tex', project + u'Documentation',
-   u'IOAM', 'manual'),
+  ('index', project + '.tex', project + 'Documentation',
+   'IOAM', 'manual'),
 ]
 
 
@@ -69,8 +69,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', ioam_project, project + u' Documentation',
-     [u'IOAM'], 1)
+    ('index', ioam_project, project + ' Documentation',
+     ['IOAM'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -83,8 +83,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', project, project + u' Documentation',
-   u'IOAM', project, 'One line description of project.',
+  ('index', project, project + ' Documentation',
+   'IOAM', project, 'One line description of project.',
    'Miscellaneous'),
 ]
 

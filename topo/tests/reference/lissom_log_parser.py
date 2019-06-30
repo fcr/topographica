@@ -21,7 +21,7 @@ filename_base = ""
 
 def dprint(txt,d=True):
     if d:
-        print txt
+        print(txt)
 
 
 
@@ -44,7 +44,7 @@ def get_input_params(old_compat=False):
 
     """
     logfile = filename_base+'log'
-    print "Reading input params from %s"%logfile
+    print("Reading input params from %s"%logfile)
     f = open(logfile,'r')
 
     # first iter is test in c++ lissom; use to get num eyes
@@ -54,9 +54,9 @@ def get_input_params(old_compat=False):
                          for i in range(n_eyes)])
 
     lines = f.readlines()
-    for line,lineno in zip(lines,range(len(lines))):
+    for line,lineno in zip(lines,list(range(len(lines)))):
         eyes = line.split('Eye')[1::]
-        for eye,i in zip(eyes,range(n_eyes)):
+        for eye,i in zip(eyes,list(range(n_eyes))):
 
             # e.g. eye='1 [Obj0 cx:-0.2 cy:13.8 theta:011.7]]  ['
             cx,cy,theta =[W.split(":")[1].split("]")[0]
@@ -221,7 +221,7 @@ def check_weights(sheet_name,proj_name,unit,slices=None,required_dp=6,display=Tr
     .matrix files; check_weights uses unsituate() to guess, but if
     it's wrong you can override with slices).
     """
-    cTIME = "%06d"%long(topo.sim.time())
+    cTIME = "%06d"%int(topo.sim.time())
     cREGION = sheet_name
     cCONN = proj_name
     cUNIT = "%03d_%03d"%unit
@@ -240,7 +240,7 @@ def check_weights(sheet_name,proj_name,unit,slices=None,required_dp=6,display=Tr
         c_weights = situated_c_weights[slices[0],slices[1]]
 
     match_dp = compare_elements(topo_weights,c_weights,name=comparing_what)
-    dprint("...matched to "+`match_dp`+" d.p.",display)
+    dprint("...matched to "+repr(match_dp)+" d.p.",display)
     # could return comparing_what & dp if that information is to be used for something else
 
     if required_dp>0:
@@ -253,7 +253,7 @@ def check_activities(sheet_name,required_dp=5,display=True):
     corresponding elements of the C++ lissom and Topographica
     activities of sheet_name match.
     """
-    cTIME = "%06d"%long(topo.sim.time())
+    cTIME = "%06d"%int(topo.sim.time())
     cREGION = sheet_name
 
     c_matrix_filename=filename_base+cTIME+'p000.'+cREGION+'_Activity.matrix'
@@ -265,7 +265,7 @@ def check_activities(sheet_name,required_dp=5,display=True):
     c_act = get_matrix(c_matrix_filename)
 
     match_dp = compare_elements(topo_act,c_act,name=comparing_what)
-    dprint("...matched to "+`match_dp`+" d.p.",display)
+    dprint("...matched to "+repr(match_dp)+" d.p.",display)
     # could return comparing_what & dp if that information is to be used for something else
 
     if required_dp>0:
@@ -274,7 +274,7 @@ def check_activities(sheet_name,required_dp=5,display=True):
 
 
 def check_size(sheet_name,proj_name,unit,slices=None,display=True):
-    cTIME = "%06d"%long(topo.sim.time())
+    cTIME = "%06d"%int(topo.sim.time())
     cREGION = sheet_name
     cCONN = proj_name
     cUNIT = "%03d_%03d"%unit
@@ -396,14 +396,14 @@ def initialize_clissom_data(name,**kw):
 
         _set_clissom_params(name,out_dir,**kw)
 
-        print "------------------------------------------------------------"
-        print "Generating c++ lissom results in %s"%out_dir
+        print("------------------------------------------------------------")
+        print("Generating c++ lissom results in %s"%out_dir)
         c = _clissomcmd(name)
-        print c
+        print(c)
         os.system(c)
-        print "------------------------------------------------------------"
+        print("------------------------------------------------------------")
         os.chdir(cwd)
     else:
-        print "Skipping c++ lissom data generation: results already exist in %s"%out_dir
+        print("Skipping c++ lissom data generation: results already exist in %s"%out_dir)
 
 

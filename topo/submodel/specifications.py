@@ -35,7 +35,7 @@ class Specification(param.Parameterized):
     @property
     def modified_parameters(self):
         "Dictionary of modified specification parameters"
-        return {k:v for k, v in self.parameters.items()
+        return {k:v for k, v in list(self.parameters.items())
                 if self.default_parameters[k] != v}
 
     @property
@@ -73,7 +73,7 @@ class Specification(param.Parameterized):
         if not hasattr(object_type,'params'):
             self.default_parameters = {}
         else:
-            for param_name, default_value in object_type.params().items():
+            for param_name, default_value in list(object_type.params().items()):
                 self.parameters[param_name]=default_value.default
             self.default_parameters = dict(**self.parameters)
 
@@ -94,12 +94,12 @@ class Specification(param.Parameterized):
 
     def keys(self):
         "The list of available property keys."
-        return self.properties.keys()
+        return list(self.properties.keys())
 
 
     def items(self):
         "The property items."
-        return self.properties.items()
+        return list(self.properties.items())
 
 
 
@@ -140,13 +140,13 @@ class ArraySpec(Specification):
 
     def summary(self, printed=True):
         summary = "%s : Numpy array" % self
-        if printed: print summary
+        if printed: print(summary)
         else:       return summary
 
 
     def __repr__(self):
         properties_repr = ', '.join("%r:%r" % (k,v) for (k,v)
-                                    in self.properties.items())
+                                    in list(self.properties.items()))
         return "ArraySpec(%r, {%s})" % (self.pathspec, properties_repr)
 
 
@@ -205,21 +205,21 @@ class SheetSpec(Specification):
         properties values.
         """
         name=''
-        for prop in self.properties.itervalues():
+        for prop in self.properties.values():
             name+=str(prop)
         return name
 
 
     def summary(self, printed=True):
         summary = "%s : %s" % (self, self.sheet_type.name)
-        if printed: print summary
+        if printed: print(summary)
         else:       return summary
 
 
     def __repr__(self):
         type_name = self.sheet_type.__name__
         properties_repr = ', '.join("%r:%r" % (k,v) for (k,v)
-                                    in self.properties.items())
+                                    in list(self.properties.items()))
         return "SheetSpec(%s, {%s})" % (type_name, properties_repr)
 
 
@@ -247,7 +247,7 @@ class ProjectionSpec(Specification):
 
         # These parameters are directly passed into topo.sim.connect()!
         ignored_keys = ['src', 'dest']
-        self.parameters = dict((k,v) for (k,v) in self.parameters.items()
+        self.parameters = dict((k,v) for (k,v) in list(self.parameters.items())
                                if k not in ignored_keys)
 
 
@@ -271,7 +271,7 @@ class ProjectionSpec(Specification):
     def summary(self, printed=True):
         summary = "%s [%s -> %s] : %s" % (self, self.src, self.dest,
                                           self.projection_type.name)
-        if printed: print summary
+        if printed: print(summary)
         else:       return summary
 
 
@@ -330,7 +330,7 @@ class ModelSpec(Specification):
             instantiate_options=available_instantiate_options
 
         if 'sheets' in instantiate_options:
-            for sheet_spec in self.sheets.data.itervalues():
+            for sheet_spec in self.sheets.data.values():
                 msglevel('Level ' + sheet_spec.level + ': Sheet ' + str(sheet_spec))
                 sheet_spec()
 
@@ -355,7 +355,7 @@ class ModelSpec(Specification):
                 summary.append("   " + projection_spec.summary(printed=False))
             summary.append('')
 
-        if printed: print "\n".join(summary)
+        if printed: print("\n".join(summary))
         else:       return "\n".join(summary)
 
 
@@ -390,4 +390,4 @@ class ModelSpec(Specification):
                 modified = [str(el) for el in sorted(spec.modified_parameters)]
                 lines.append("%s : [%s]" % (str(spec).ljust(padding), ", ".join(modified)))
             lines.append('')
-        print "\n".join(lines)
+        print("\n".join(lines))

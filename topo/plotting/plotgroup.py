@@ -25,8 +25,8 @@ from topo.base.cf import CFSheet,CFProjection
 from topo.base.projection import ProjectionSheet
 from topo.sheet import GeneratorSheet,Sheet
 
-from plot import make_template_plot, Plot
-from plotfilesaver import PlotGroupSaver,CFProjectionPlotGroupSaver
+from .plot import make_template_plot, Plot
+from .plotfilesaver import PlotGroupSaver,CFProjectionPlotGroupSaver
 
 # General CEBALERTs for this file:
 # * It is very difficult to understand what is happening in these
@@ -305,7 +305,7 @@ class SheetPlotGroup(PlotGroup):
     ########## adds for users
 
     def sheets(self):
-        return topo.sim.objects(Sheet).values()
+        return list(topo.sim.objects(Sheet).values())
 
 
     def update_maximum_plot_height(self,zoom_factor=None):
@@ -628,7 +628,7 @@ class TemplatePlotGroup(SheetPlotGroup):
         # calls make_template_plot for all plot_templates for all kw returned
         # by _kw_for_make_template_plot!!
         template_plots = []
-        for plot_template_name,plot_template in self.plot_templates.items():
+        for plot_template_name,plot_template in list(self.plot_templates.items()):
             for kw in self._kw_for_make_template_plot(range_):
                 template_plots.append(self._make_template_plot(plot_template_name,plot_template,**kw))
         return template_plots
@@ -664,10 +664,10 @@ class TemplatePlotGroup(SheetPlotGroup):
 def default_measureable_sheet():
     """Returns the first sheet for which measure_maps is True (if any), or else the first sheet, for use as a default value."""
 
-    sheets = [s for s in topo.sim.objects(Sheet).values()
+    sheets = [s for s in list(topo.sim.objects(Sheet).values())
               if hasattr(s,'measure_maps') and s.measure_maps]
     if len(sheets)<1:
-        sheets = [s for s in topo.sim.objects(Sheet).values()]
+        sheets = [s for s in list(topo.sim.objects(Sheet).values())]
     if len(sheets)<1:
         raise ValueError("Unable to find a suitable measureable sheet.")
     sht=sheets[0]
@@ -736,7 +736,7 @@ class ProjectionSheetPlotGroup(TemplatePlotGroup):
     ########## adds for users
 
     def projections(self):
-        return self.sheet.projections().values()
+        return list(self.sheet.projections().values())
 
 
     #####################
@@ -771,7 +771,7 @@ class ProjectionSheetPlotGroup(TemplatePlotGroup):
 
         if self.normalize=='JointProjections':
             ranges = {}
-            for group_key in self.sheet._grouped_in_projections('JointNormalize').keys():
+            for group_key in list(self.sheet._grouped_in_projections('JointNormalize').keys()):
                 if group_key is None:
                     ranges[group_key]=False
                 else:
@@ -857,7 +857,7 @@ class ProjectionSheetPlotGroup(TemplatePlotGroup):
     # _kw_for_make_template_plot(), to allow calculation of range for
     # joint normalization. A mess.
     def _hack(self,range_):
-        for key,projlist in self.sheet._grouped_in_projections('JointNormalize').items():
+        for key,projlist in list(self.sheet._grouped_in_projections('JointNormalize').items()):
             if key==self._group_key:
                 args = []
                 for proj in projlist or self.projections():
@@ -871,7 +871,7 @@ class ProjectionSheetPlotGroup(TemplatePlotGroup):
     def __keyed_projections(self):
         # helper method to return a list of (key,proj) pairs from self.sheet
         keys_and_projns = []
-        for key,projlist in self.sheet._grouped_in_projections('JointNormalize').items():
+        for key,projlist in list(self.sheet._grouped_in_projections('JointNormalize').items()):
             for proj in projlist:
                 keys_and_projns.append((key,proj))
         return keys_and_projns
@@ -989,7 +989,7 @@ class GridPlotGroup(ProjectionSheetPlotGroup):
         coords = []
         self.proj_plotting_shape = (int(y * self.density),int(x * self.density))
 
-        for j in rev(range(self.proj_plotting_shape[0])):
+        for j in rev(list(range(self.proj_plotting_shape[0]))):
             for i in range(self.proj_plotting_shape[1]):
                 coords.append((x_step*i + l, y_step*j + b))
 
@@ -999,7 +999,7 @@ class GridPlotGroup(ProjectionSheetPlotGroup):
 
 def default_input_sheet():
     """Returns the first GeneratorSheet defined, for use as a default value."""
-    sheets=topo.sim.objects(GeneratorSheet).values()
+    sheets=list(topo.sim.objects(GeneratorSheet).values())
     if len(sheets)<1:
         raise ValueError("Unable to find a suitable input sheet.")
     sht=sheets[0]
@@ -1309,7 +1309,7 @@ class FeatureCurvePlotGroup(UnitPlotGroup):
         use the max timestamp as the plot label
         Displays a warning if not all curves have been measured at the same time.
         """
-        timestamps = [curve_view.timestamp for curve_view in self.sheet.views.Curves.itervalues()]
+        timestamps = [curve_view.timestamp for curve_view in self.sheet.views.Curves.values()]
 
         if timestamps != []:
             self.time = max(timestamps)
@@ -1428,7 +1428,7 @@ class save_plotgroup(ParameterizedFunction):
 
         # Specified parameters that aren't parameters of
         # save_plotgroup() are set on the plotgroup
-        for n,v in p.extra_keywords().items():
+        for n,v in list(p.extra_keywords().items()):
             plotgroup.set_param(n,v)
 
         # Reset plot cache when time changes
@@ -1445,7 +1445,7 @@ class save_plotgroup(ParameterizedFunction):
                     update=False
                     break
 
-        keywords=" ".join(["%s" % (v.name if isinstance(v,param.Parameterized) else str(v)) for n,v in p.extra_keywords().items()])
+        keywords=" ".join(["%s" % (v.name if isinstance(v,param.Parameterized) else str(v)) for n,v in list(p.extra_keywords().items())])
         plot_description="%s%s%s" % (plotgroup.name," " if keywords else "",keywords)
         if update:
             self.previous_plotgroups.append(plotgroup)
@@ -1529,9 +1529,9 @@ class Subplotting(param.Parameterized):
             confidence = prefix + "Selectivity"
 
         for name in Subplotting.plotgroups_to_subplot:
-            if name in plotgroups.keys():
+            if name in list(plotgroups.keys()):
                 pg = plotgroups[name]
-                if name in pg.plot_templates.keys():
+                if name in list(pg.plot_templates.keys()):
                     pt = pg.plot_templates[name]
                     pt["Hue"] = hue
                     pt["Confidence"] = confidence

@@ -70,7 +70,7 @@ def run(examples,script_name,density=None,commands=["topo.sim.run(1)"]):
     """
 
     if density:
-        density_cmd = ' -c "default_density='+`density`+'" '
+        density_cmd = ' -c "default_density='+repr(density)+'" '
     else:
         density_cmd = " "
 
@@ -106,19 +106,19 @@ def copy_examples():
     examples = find_examples()
     locn = os.path.join(param.normalize_path.prefix,"examples")
     if os.path.exists(locn):
-        print "%s already exists; delete or rename it if you want to re-copy the examples."%locn
+        print("%s already exists; delete or rename it if you want to re-copy the examples."%locn)
         return
     else:
-        print "Creating %s"%locn
+        print("Creating %s"%locn)
         import shutil
-        print "Copying %s to %s"%(examples,locn)
+        print("Copying %s to %s"%(examples,locn))
         shutil.copytree(examples,locn)
 
 
 def print_examples_dir(**kw):
     examples = find_examples(**kw)
     if examples:
-        print "Found examples in %s"%examples
+        print("Found examples in %s"%examples)
 
 def find_examples(specified_examples=None,dirs=None):
     import topo
@@ -201,7 +201,7 @@ def _stuff(specified_targets):
     if not examples:
         raise IOError("Could not find examples.")
     else:
-        print "Found examples in %s"%examples
+        print("Found examples in %s"%examples)
 
     # CB: so much repeated typing...
 
@@ -264,6 +264,6 @@ class generate(param.ParameterizedFunction):
         command_labels,available_targets = _stuff(p.targets)
         for cmd in command_labels:
             c = available_targets[cmd]
-            print c
+            print(c)
             system(c)
 

@@ -8,8 +8,8 @@ import copy
 
 import ImageTk
 
-import Tkinter
-from Tkinter import  Frame, TOP, YES, BOTH, X, LEFT, \
+import tkinter
+from tkinter import  Frame, TOP, YES, BOTH, X, LEFT, \
      RIGHT, DISABLED, NORMAL, Canvas, Label, NSEW, \
      NO, NONE,TclError
 
@@ -145,12 +145,12 @@ class PlotGroupPanel(tk.TkParameterized,Frame):
         self.control_frame_2 = Frame(master.noscroll)
         self.control_frame_2.pack(side=TOP,expand=NO,fill=X)
 
-        self.plot_frame = Tkinter.LabelFrame(self,text=self.plotgroup.name)
+        self.plot_frame = tkinter.LabelFrame(self,text=self.plotgroup.name)
         self.plot_frame.pack(side=TOP,expand=YES,fill=BOTH)#,padx=5,pady=5)
 
         # CB: why did I need a new frame after switching to 8.5?
         # I've forgotten what i changed.
-        self.plot_container = Tkinter.Frame(self.plot_frame)
+        self.plot_container = tkinter.Frame(self.plot_frame)
         self.plot_container.pack(anchor="center")
 
 
@@ -331,7 +331,7 @@ Many hooks accept 'display=True' so that the progress can be viewed in an open A
             self._right_click_info = event_info
 
             # CB: part of disable items hack
-            for v in self._unit_menu_updaters.values(): v(plot)
+            for v in list(self._unit_menu_updaters.values()): v(plot)
 
             if show_menu:
                 self._canvas_menu.tk_popup(event_info['event'].x_root,
@@ -490,7 +490,7 @@ Many hooks accept 'display=True' so that the progress can be viewed in an open A
                                     borderwidth=1,highlightthickness=0,
                                     relief='groove')
                              for image in self.zoomed_images]
-            for i,image,canvas in zip(range(len(self.zoomed_images)),
+            for i,image,canvas in zip(list(range(len(self.zoomed_images))),
                                       self.zoomed_images,self.canvases):
                 canvas.create_image(1,1,anchor="nw",image=image)
                 canvas.grid(row=self._rows[i],column=self._cols[i],padx=5)
@@ -502,7 +502,7 @@ Many hooks accept 'display=True' so that the progress can be viewed in an open A
 
         else:
             # Don't need new canvases...
-            for i,image,canvas in zip(range(len(self.zoomed_images)),
+            for i,image,canvas in zip(list(range(len(self.zoomed_images))),
                                       self.zoomed_images,self.canvases):
                 canvas.create_image(1,1,anchor="nw",image=image)
                 canvas.grid(row=self._rows[i],column=self._cols[i],padx=5)
@@ -759,7 +759,7 @@ class SheetPanel(PlotGroupPanel):
         more specific requirements should override this method with
         something more appropriate.
         """
-        if topo.sim.objects(cls.sheet_type).items():
+        if list(topo.sim.objects(cls.sheet_type).items()):
             return True
         else:
             return False
@@ -873,7 +873,7 @@ class SheetPanel(PlotGroupPanel):
 
             # RFHACK:
             # just matrixplot for whatever generators have the views
-            for g in topo.sim.objects(GeneratorSheet).values():
+            for g in list(topo.sim.objects(GeneratorSheet).values()):
                 try:
                     view = sheet.views.RFs[g.name][center_x, center_y]
                     matrixplot(view.last.data,title=("Receptive Field of %s unit (%d,%d) at coord (%3.0f, %3.0f) at time %s" %

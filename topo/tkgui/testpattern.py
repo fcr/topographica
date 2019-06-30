@@ -11,7 +11,7 @@ The Test Pattern window allows input patterns to be previewed.
 # CBENHANCEMENT: add 'use for learning' to install current pattern
 # (saving previous ones)?
 
-from Tkinter import Frame
+from tkinter import Frame
 
 import param
 import paramtk as tk
@@ -28,7 +28,7 @@ from topo.plotting.plot import make_template_plot
 from topo.plotting.plotgroup import SheetPlotGroup
 from topo.analysis.featureresponses import pattern_present
 
-from plotgrouppanel import SheetPanel
+from .plotgrouppanel import SheetPanel
 
 
 # CEBALERT: this uses make_template_plot(), so how is it not a
@@ -142,7 +142,7 @@ class TestPattern(SheetPanel):
         self.plotgroup._sheets = [GeneratorSheet(name=gs.name,
                                                  nominal_bounds=gs.nominal_bounds,
                                                  nominal_density=gs.nominal_density)
-                                  for gs in topo.sim.objects(GeneratorSheet).values()]
+                                  for gs in list(topo.sim.objects(GeneratorSheet).values())]
         self.plotgroup._set_name("Test Pattern")
 
 

@@ -35,11 +35,11 @@ class TestCFIter(unittest.TestCase):
         iterator = self.iter_type(proj)
         for cf,i in iterator():
             total += 1
-            self.failUnless(0 <= i < 100, "CFIter generated bogus CF index")
+            self.assertTrue(0 <= i < 100, "CFIter generated bogus CF index")
             cfxy = (proj.X_cf.flat[i],proj.Y_cf.flat[i])
             r,c = i/cols,i%cols
-            self.failUnlessEqual(cfxy,dest.matrixidx2sheet(r,c))
-        self.failUnlessEqual(total,100)
+            self.assertEqual(cfxy,dest.matrixidx2sheet(r,c))
+        self.assertEqual(total,100)
 
 
     def test_iterate_some_nil(self):
@@ -52,8 +52,8 @@ class TestCFIter(unittest.TestCase):
         proj.flatcfs[24] = None
         for cf,i in self.iter_type(proj)():
             total += 1
-            self.failIfEqual(i,24)
-        self.failUnlessEqual(total,99)
+            self.assertNotEqual(i,24)
+        self.assertEqual(total,99)
 
 
     def test_iterate_masked(self):
@@ -67,9 +67,9 @@ class TestCFIter(unittest.TestCase):
         dest.mask.data.flat[24] = 1
         for cf,i in self.iter_type(proj)():
             total += 1
-            self.failUnlessEqual(i,24)
-            self.failUnless(cf is proj.flatcfs[24])
-        self.failUnlessEqual(total,1)
+            self.assertEqual(i,24)
+            self.assertTrue(cf is proj.flatcfs[24])
+        self.assertEqual(total,1)
 
 if __name__ == "__main__":
 	import nose

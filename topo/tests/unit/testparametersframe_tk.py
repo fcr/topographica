@@ -4,7 +4,7 @@ Tests for the ParametersFrame classes.
 
 import __main__
 import unittest
-import Tkinter
+import tkinter
 
 import param
 import paramtk as tk
@@ -48,7 +48,7 @@ class TestParametersFrameWithApply(unittest.TestCase):
         self.testpo2 = TestPO()
         self.testpo1.params()['osp'].objects = self.some_pos
 
-        self.toplevel = Tkinter.Toplevel()
+        self.toplevel = tkinter.Toplevel()
         self.f = tk.ParametersFrameWithApply(self.toplevel,self.testpo1)
 
 
@@ -68,17 +68,17 @@ class TestParametersFrameWithApply(unittest.TestCase):
         """
         ## check that update doesn't affect the variable values
         orig_values = {}
-        for param_name,tkvar in self.f._tkvars.items():
+        for param_name,tkvar in list(self.f._tkvars.items()):
             orig_values[param_name] = tkvar._original_get()
 
         self.f.Apply()
 
-        for param_name,val in orig_values.items():
+        for param_name,val in list(orig_values.items()):
             self.assertEqual(self.f._tkvars[param_name].get(),val)
 
         ## and check that *displayed* values don't change
         orig_values = {}
-        for param_name,representation in self.f.representations.items():
+        for param_name,representation in list(self.f.representations.items()):
             widget = representation['widget']
 
             # button-type widgets don't have a value
@@ -89,7 +89,7 @@ class TestParametersFrameWithApply(unittest.TestCase):
 
         self.f.Apply()
 
-        for param_name,val in orig_values.items():
+        for param_name,val in list(orig_values.items()):
             widget = self.f.representations[param_name]['widget']
             self.assertEqual(widget.get(),val)
 
@@ -110,7 +110,7 @@ class TestParametersFrameWithApply(unittest.TestCase):
           Finally, check that when the string remains the same in a box
           that a new object is not instantiated each time Apply is pressed.
         """
-        exec "from topo.tests.unit.testparametersframe_tk import TestPO" in __main__.__dict__
+        exec("from topo.tests.unit.testparametersframe_tk import TestPO", __main__.__dict__)
         w = self.f.representations['pa']['widget']
         w.delete(0,"end")
         w.insert(0,"TestPO()")

@@ -21,6 +21,7 @@ import param
 from topo.base.functionfamily import CoordinateMapperFn
 from topo.misc.util import signabs
 from topo import numbergen
+from functools import reduce
 
 
 
@@ -50,7 +51,7 @@ class Pipeline(CoordinateMapperFn):
         doc="The sequence of mappers to apply.")
 
     def __call__(self,x,y):
-        return reduce( lambda args,f: apply(f,args),
+        return reduce( lambda args,f: f(*args),
                        [(x,y)] + self.mappers )
 
 
@@ -483,22 +484,22 @@ def test_ottes_inverse():
 
     A,Bu,Bv = 5.3,1.8,1.8
 
-    print '%10s %10s | %10s %10s | %10s %10s | %s' \
-          % ('R in','phi in','R out','phi out','R err','phi err','phi ratio')
+    print('%10s %10s | %10s %10s | %10s %10s | %s' \
+          % ('R in','phi in','R out','phi out','R err','phi err','phi ratio'))
     for r in range(10,60,10):
         for phi in range(-60,60,10):
             if  phi != 0:
                 u,v = ottes_mapping(r,phi,A,Bu,Bv)
                 r2,phi2 = ottes_inverse_mapping(u,v,A,Bu,Bv)
-                print '%10.2f %10.2f | %10.2f %10.2f | %10.2f %10.2f | %.2f' \
-                      % (r,phi,r2,phi2,r2-r,phi2-phi,phi/phi2)
+                print('%10.2f %10.2f | %10.2f %10.2f | %10.2f %10.2f | %.2f' \
+                      % (r,phi,r2,phi2,r2-r,phi2-phi,phi/phi2))
 
 
-_public = list(set([_k for _k,_v in locals().items()
+_public = list(set([_k for _k,_v in list(locals().items())
                     if isinstance(_v,type) \
                     and issubclass(_v,CoordinateMapperFn)]))
 
 # Automatically discover all .py files in this directory.
 import os,fnmatch
 __all__ = _public + [f.split('.py')[0] for f in os.listdir(__path__[0]) if fnmatch.fnmatch(f,'[!._]*.py')]
-del f,os,fnmatch
+del os,fnmatch

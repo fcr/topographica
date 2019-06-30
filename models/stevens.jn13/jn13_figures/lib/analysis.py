@@ -193,7 +193,7 @@ def identify_pinwheels(re_contours,  im_contours, intersections):
         np.seterr(divide='call', invalid='call')
         x, y = find_intersections(re_contour, im_contour)
         np.seterr(divide='raise', invalid='raise')
-        pinwheels += zip(x,y)
+        pinwheels += list(zip(x,y))
 
     warning_counter.warn()
     return pinwheels
@@ -223,7 +223,7 @@ def wavenumber_spectrum(spectrum, reduce_fn=np.mean):
 
     # Invert as power_spectrum returns black (low values) for high amplitude
     spectrum = 1 - spectrum
-    pixel_bins = range(0, (dim / 2) + 1)
+    pixel_bins = list(range(0, (dim / 2) + 1))
     lower = -(dim / 2); upper = (dim / 2)+1
 
     # Grid of coordinates relative to central DC component (0,0)
@@ -234,11 +234,11 @@ def wavenumber_spectrum(spectrum, reduce_fn=np.mean):
     # Indices in pixel_bins to which the distances belong
     bin_allocation = np.digitize(flat_pixel_distances, pixel_bins)
     # The bin allocation zipped with actual fft power values
-    spectrum_bins = zip(bin_allocation, flat_spectrum)
+    spectrum_bins = list(zip(bin_allocation, flat_spectrum))
     grouped_bins = itertools.groupby(sorted(spectrum_bins), lambda x:x[0])
     hist_values = [([sval for (_,sval) in it], bin)
                    for (bin, it) in grouped_bins]
-    (power_values, bin_boundaries) = zip(*hist_values)
+    (power_values, bin_boundaries) = list(zip(*hist_values))
     averaged_powers = [reduce_fn(power) for power in power_values]
     assert len(bin_boundaries) == len(pixel_bins)
     return averaged_powers
@@ -270,12 +270,12 @@ def hypercolumn_distance(preference, init_fit=[0.35,3.8,1.3,0.15,-0.003,0]):
     """
     fft_spectrum = power_spectrum(preference)
     amplitudes = wavenumber_spectrum(fft_spectrum)
-    ks = np.array(range(len(amplitudes)))
+    ks = np.array(list(range(len(amplitudes))))
 
     try:
         fit_vals, _ = curve_fit(KaschubeFit, ks, np.array(amplitudes),
                                 init_fit, maxfev=10000)
-        fit = dict(zip(['a0','a1','a2','a3','a4','a5'], fit_vals))
+        fit = dict(list(zip(['a0','a1','a2','a3','a4','a5'], fit_vals)))
         valid_fit = (fit['a1'] > 0)
     except:
         valid_fit = False

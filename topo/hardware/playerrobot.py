@@ -12,7 +12,7 @@ This is a temporary home for this file until it finds a permanent home
 import time,array
 
 from threading import RLock, Thread
-from Queue import Queue
+from queue import Queue
 
 from operator import eq,ne
 from math import pi
@@ -169,7 +169,7 @@ class PlayerObject(object):
         while not self.cmd_queue.empty():
             name,args = self.cmd_queue.get()
             try:
-                print "Doing command:",name,args
+                print("Doing command:",name,args)
                 getattr(self,name)(*args)
             finally:
                 self.cmd_queue.task_done()

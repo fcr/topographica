@@ -14,9 +14,10 @@ from imagen import Disk
 from holoviews import Image, Layout
 from topo.misc.attrdict import AttrDict
 
-from sheet import Sheet
-from simulation import EPConnection
-from functionfamily import TransferFn
+from .sheet import Sheet
+from .simulation import EPConnection
+from .functionfamily import TransferFn
+from functools import reduce
 
 
 class SheetMask(param.Parameterized):
@@ -536,11 +537,11 @@ class ProjectionSheet(Sheet):
 
         for proj in self.in_connections:
             if (proj.activity_group != None) | (proj.dest_port[0] != 'Activity'):
-                if not tmp_dict.has_key(proj.activity_group[0]):
+                if proj.activity_group[0] not in tmp_dict:
                     tmp_dict[proj.activity_group[0]]=[]
                 tmp_dict[proj.activity_group[0]].append(proj)
 
-        keys = tmp_dict.keys()
+        keys = list(tmp_dict.keys())
         keys.sort()
         for priority in keys:
             tmp_activity = self.activity.copy() * 0.0
@@ -669,7 +670,7 @@ class ProjectionSheet(Sheet):
         Subclasses Sheet state_push to also push projection activities.
         """
         super(ProjectionSheet, self).state_push()
-        for p in self.projections().values(): p.state_push()
+        for p in list(self.projections().values()): p.state_push()
 
 
     def state_pop(self):
@@ -677,7 +678,7 @@ class ProjectionSheet(Sheet):
         Subclasses Sheet state_pop to also pop projection activities.
         """
         super(ProjectionSheet, self).state_pop()
-        for p in self.projections().values(): p.state_pop()
+        for p in list(self.projections().values()): p.state_pop()
 
 
     def n_bytes(self):
@@ -747,8 +748,8 @@ class NeighborhoodMask(SheetMask):
         ignore1,matradius = self.sheet.sheet2matrixidx(self.radius,0)
         ignore2,x = self.sheet.sheet2matrixidx(0,0)
         matradius = abs(matradius-x)
-        for r in xrange(rows):
-            for c in xrange(cols):
+        for r in range(rows):
+            for c in range(cols):
                 rr = max(0,r-matradius)
                 cc = max(0,c-matradius)
                 neighbourhood = self.sheet.activity[rr:r+matradius+1,cc:c+matradius+1].ravel()

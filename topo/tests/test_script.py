@@ -6,7 +6,7 @@ Check README and buildbot to see how all these tests are run.
 """
 
 
-import pickle, copy, __main__, timeit, os, os.path, socket, cPickle, inspect, traceback, tempfile, shutil
+import pickle, copy, __main__, timeit, os, os.path, socket, pickle, inspect, traceback, tempfile, shutil
 
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 
@@ -51,8 +51,8 @@ def _support_old_args(args):
     # (left the dels commented out for now in case scripts still use old names)
 
 def _setargs(args):
-    for arg,val in args.items():
-        print "Setting %s=%s"%(arg,val)
+    for arg,val in list(args.items()):
+        print("Setting %s=%s"%(arg,val))
         __main__.__dict__[arg]=val
 
 # For generating data in a separate process, leaving the parent with
@@ -75,9 +75,9 @@ def _instantiate_everything(
 
     # CEBALERT: this is basically get_PO_class_attributes from param.parameterized
     def get_classes(module,classes,processed_modules,module_excludes=()):
-        exec "from %s import *"%module.__name__ in locals()
+        exec("from %s import *"%module.__name__, locals())
         dict_ = module.__dict__
-        for (k,v) in dict_.items():
+        for (k,v) in list(dict_.items()):
             if '__all__' in dict_ and inspect.ismodule(v) and k not in module_excludes:
                 if k in dict_['__all__'] and v not in processed_modules:
                     get_classes(v,classes,processed_modules,module_excludes)
@@ -109,11 +109,11 @@ def _instantiate_everything(
             #print "Could not instantiate %s"%class_name
             uninstantiated_names.append(class_name)
 
-    print "\n ** Instantiated %s classes:"%len(instantiated_names)
-    print "\n".join(instantiated_names)
+    print("\n ** Instantiated %s classes:"%len(instantiated_names))
+    print("\n".join(instantiated_names))
 
-    print "\n ** Could not instantiate %s classes:"%len(uninstantiated_names)
-    print "\n".join(uninstantiated_names)
+    print("\n ** Could not instantiate %s classes:"%len(uninstantiated_names))
+    print("\n".join(uninstantiated_names))
 
     return instances
 
@@ -136,18 +136,18 @@ LGN_DENSITY = 24
 
 def _generate_data(script,data_filename,look_at='V1',run_for=[1,99,150],**args):
 
-    print "Generating data for %s's %s after topo.sim.run(%s)"%(script,look_at,run_for)
+    print("Generating data for %s's %s after topo.sim.run(%s)"%(script,look_at,run_for))
 
     _setargs(args)
 
-    execfile(script,__main__.__dict__)
+    exec(compile(open(script, "rb").read(), script, 'exec'),__main__.__dict__)
 
     data = {}
 
     for time in run_for:
-        print "Running for %s iterations"%time
+        print("Running for %s iterations"%time)
         topo.sim.run(time)
-        print "Recording data for %s at %s"%(look_at,topo.sim.timestr())
+        print("Recording data for %s at %s"%(look_at,topo.sim.timestr()))
         data[topo.sim.timestr()] = copy.deepcopy(topo.sim[look_at].activity)
 
     data['args']=args
@@ -155,7 +155,7 @@ def _generate_data(script,data_filename,look_at='V1',run_for=[1,99,150],**args):
     data['look_at']=look_at
     data['versions'] = topo.version,topo.release
 
-    print "Saving data to %s"%data_filename
+    print("Saving data to %s"%data_filename)
     pickle.dump(data,open(data_filename,'wb'),2)
 
 
@@ -175,7 +175,7 @@ def test_script(script,decimal=None):
     testing for array equality. The default of None causes exact
     matching.
     """
-    print "Comparing results for %s"%script
+    print("Comparing results for %s"%script)
 
     script_name = os.path.basename(script)
     # CEBALERT: clean up
@@ -186,17 +186,17 @@ def test_script(script,decimal=None):
     try:
         locn = resolve_path(data_filename_only,search_paths=[FIXEDDATADIR,TESTSDATADIR])
     except IOError:
-        print "No existing data"
+        print("No existing data")
         #_run_in_forked_process(_generate_data,script,data_filename,run_for=RUN_FOR,cortex_density=TRAINTESTS_CORTEXDENSITY,lgn_density=LGN_DENSITY, retina_density=RETINA_DENSITY)
         _generate_data(script,data_filename,run_for=RUN_FOR,cortex_density=TRAINTESTS_CORTEXDENSITY,lgn_density=LGN_DENSITY,retina_density=RETINA_DENSITY)
         locn = resolve_path(data_filename)
 
-    print "Reading data from %s"%locn
+    print("Reading data from %s"%locn)
 
     data_file = open(locn,'rb')
     data = pickle.load(data_file)
 
-    print "Data from release=%s, version=%s"%(data['versions'] if 'versions' in data else ("unknown","unknown"))
+    print("Data from release=%s, version=%s"%(data['versions'] if 'versions' in data else ("unknown","unknown")))
 
     # retrieve parameters used when script was run
     run_for=data['run_for']
@@ -213,8 +213,8 @@ def test_script(script,decimal=None):
 
     _setargs(args)
 
-    print "Starting '%s'"%script
-    execfile(script,__main__.__dict__)
+    print("Starting '%s'"%script)
+    exec(compile(open(script, "rb").read(), script, 'exec'),__main__.__dict__)
 
     #########################################################
     time_fmt = topo.sim.timestr
@@ -225,7 +225,7 @@ def test_script(script,decimal=None):
     #########################################################
 
     for time in run_for:
-        print "Running for %s iterations"%time
+        print("Running for %s iterations"%time)
         topo.sim.run(time)
 
 
@@ -238,7 +238,7 @@ def test_script(script,decimal=None):
 
     result = "Results from " + script + " have not changed."
     if decimal is not None: result+= " (%d dp)" % (decimal)
-    print result+"\n"
+    print(result+"\n")
 
 
 # CEBALERT: old name
@@ -258,16 +258,16 @@ def _time_sim_run(script,iterations=10):
 
     Uses the timeit module.
     """
-    print "Running '%s' for %s iterations"%(script,iterations)
-    execfile(script,__main__.__dict__)
+    print("Running '%s' for %s iterations"%(script,iterations))
+    exec(compile(open(script, "rb").read(), script, 'exec'),__main__.__dict__)
     topo.sim.run(1) # ensure compilations etc happen outside timing
     # CB: we enable garbage collection
     # (http://docs.python.org/lib/module-timeit.html)
-    return timeit.Timer('topo.sim.run('+`iterations`+')','gc.enable(); import topo').timeit(number=1)
+    return timeit.Timer('topo.sim.run('+repr(iterations)+')','gc.enable(); import topo').timeit(number=1)
 
 
 def _generate_speed_data(script,data_filename,iterations=100,**args):
-    print "Generating speed data for %s"%script
+    print("Generating speed data for %s"%script)
 
     _setargs(args)
 
@@ -279,7 +279,7 @@ def _generate_speed_data(script,data_filename,iterations=100,**args):
 
     speed_data['versions'] = topo.version,topo.release
 
-    print "Saving data to %s"%data_filename
+    print("Saving data to %s"%data_filename)
     pickle.dump(speed_data,open(data_filename,'wb'),2)
 
 
@@ -294,7 +294,7 @@ def compare_speed_data(script):
     MACHINETESTSDATADIR/script_name.ty_DATA (i.e. to generate new
     data, delete the existing data before running).
     """
-    print "Comparing speed data for %s"%script
+    print("Comparing speed data for %s"%script)
 
     script_name = os.path.basename(script)
     ensure_path_exists(MACHINETESTSDATADIR)
@@ -303,18 +303,18 @@ def compare_speed_data(script):
     try:
         locn = resolve_path(data_filename)
     except IOError:
-        print "No existing data"
+        print("No existing data")
         #_run_in_forked_process(_generate_speed_data,script,data_filename,iterations=SPEEDTESTS_ITERATIONS,cortex_density=SPEEDTESTS_CORTEXDENSITY)
         _generate_speed_data(script,data_filename,iterations=SPEEDTESTS_ITERATIONS,cortex_density=SPEEDTESTS_CORTEXDENSITY)
         locn = resolve_path(data_filename)
 
-    print "Reading data from %s"%locn
+    print("Reading data from %s"%locn)
 
     speed_data_file = open(locn,'r')
 
     try:
         speed_data = pickle.load(speed_data_file)
-        print "Data from release=%s, version=%s"%(speed_data['versions'] if 'versions' in speed_data else ("unknown","unknown"))
+        print("Data from release=%s, version=%s"%(speed_data['versions'] if 'versions' in speed_data else ("unknown","unknown")))
     except:
     ###############################################################
     ## Support old data files (used to be string in the file rather
@@ -343,8 +343,8 @@ def compare_speed_data(script):
 
     percent_change = 100.0*(new_time-old_time)/old_time
 
-    print "["+script+"]"+ '  Before: %2.1f s  Now: %2.1f s  (change=%2.1f s, %2.1f percent)'\
-          %(old_time,new_time,new_time-old_time,percent_change)
+    print("["+script+"]"+ '  Before: %2.1f s  Now: %2.1f s  (change=%2.1f s, %2.1f percent)'\
+          %(old_time,new_time,new_time-old_time,percent_change))
 
     # CEBALERT: whatever compensations the python timing functions are supposed to make for CPU
     # activity, do they work well enough? If the processor is being used, these times jump all
@@ -360,12 +360,12 @@ def compare_speed_data(script):
 # CEBALERT: figure out what this meant: "expect variation in these
 # results! see python's timeit module documentation"
 def _time_sim_startup(script):
-    print "Starting %s"%script
+    print("Starting %s"%script)
     return timeit.Timer("execfile('%s',__main__.__dict__)"%script,'import __main__;gc.enable()').timeit(number=1)
 
 
 def _generate_startup_speed_data(script,data_filename,**args):
-    print "Generating startup speed data for %s"%script
+    print("Generating startup speed data for %s"%script)
 
     _setargs(args)
     how_long = _time_sim_startup(script)
@@ -375,7 +375,7 @@ def _generate_startup_speed_data(script,data_filename,**args):
 
     speed_data['versions'] = topo.version,topo.release
 
-    print "Saving data to %s"%data_filename
+    print("Saving data to %s"%data_filename)
     pickle.dump(speed_data,open(data_filename,'wb'),2)
 
 
@@ -392,7 +392,7 @@ def compare_startup_speed_data(script):
     """
     script = script.replace("\\", "\\\\")
     
-    print "Comparing startup speed data for %s"%script
+    print("Comparing startup speed data for %s"%script)
 
     script_name = os.path.basename(script)
     ensure_path_exists(MACHINETESTSDATADIR)
@@ -401,18 +401,18 @@ def compare_startup_speed_data(script):
     try:
         locn = resolve_path(data_filename)
     except IOError:
-        print "No existing data"
+        print("No existing data")
         #_run_in_forked_process(_generate_startup_speed_data,script,data_filename,cortex_density=SPEEDTESTS_CORTEXDENSITY)
         _generate_startup_speed_data(script,data_filename,cortex_density=SPEEDTESTS_CORTEXDENSITY)
         locn = resolve_path(data_filename)
 
-    print "Reading data from %s"%locn
+    print("Reading data from %s"%locn)
 
     speed_data_file = open(locn,'r')
 
     try:
         speed_data = pickle.load(speed_data_file)
-        print "Data from release=%s, version=%s"%(speed_data['versions'] if 'versions' in speed_data else ("unknown","unknown"))
+        print("Data from release=%s, version=%s"%(speed_data['versions'] if 'versions' in speed_data else ("unknown","unknown")))
     except:
     ###############################################################
     ## Support old data files (used to be string in the file rather
@@ -437,8 +437,8 @@ def compare_startup_speed_data(script):
 
     percent_change = 100.0*(new_time-old_time)/old_time
 
-    print "["+script+ ' startup]  Before: %2.1f s  Now: %2.1f s  (change=%2.1f s, %2.1f percent)'\
-          %(old_time,new_time,new_time-old_time,percent_change)
+    print("["+script+ ' startup]  Before: %2.1f s  Now: %2.1f s  (change=%2.1f s, %2.1f percent)'\
+          %(old_time,new_time,new_time-old_time,percent_change))
 
 
 ### end startup timing
@@ -463,7 +463,7 @@ def compare_with_and_without_snapshot_NoSnapshot(script="models/lissom.ty",look_
     __main__.__dict__['dims']=dims
     __main__.__dict__['dataset']=dataset
 
-    execfile(script,__main__.__dict__)
+    exec(compile(open(script, "rb").read(), script, 'exec'),__main__.__dict__)
 
     data = {}
     topo.sim.run(break_at)
@@ -482,7 +482,7 @@ def compare_with_and_without_snapshot_NoSnapshot(script="models/lissom.ty",look_
     data['dataset']=dataset
 
     locn = normalize_path(os.path.join("tests",data_filename))
-    print "Writing pickle to %s"%locn
+    print("Writing pickle to %s"%locn)
     pickle.dump(data,open(locn,'wb'),2)
 
 
@@ -490,12 +490,12 @@ def compare_with_and_without_snapshot_CreateSnapshot(script="models/lissom.ty"):
     data_filename=os.path.split(script)[1]+"_PICKLETEST"
 
     locn = resolve_path(os.path.join('tests',data_filename))
-    print "Loading pickle at %s"%locn
+    print("Loading pickle at %s"%locn)
 
     try:
         data = pickle.load(open(locn,"rb"))
     except IOError:
-        print "\nData file '"+data_filename+"' could not be opened; run _A() first."
+        print("\nData file '"+data_filename+"' could not be opened; run _A() first.")
         raise
 
     # retrieve parameters used when script was run
@@ -515,7 +515,7 @@ def compare_with_and_without_snapshot_CreateSnapshot(script="models/lissom.ty"):
     __main__.__dict__['retina_density']=retina_density
     __main__.__dict__['dims']=dims
     __main__.__dict__['dataset']=dataset
-    execfile(script,__main__.__dict__)
+    exec(compile(open(script, "rb").read(), script, 'exec'),__main__.__dict__)
 
     # check we have the same before any pickling
     topo.sim.run(break_at)
@@ -524,7 +524,7 @@ def compare_with_and_without_snapshot_CreateSnapshot(script="models/lissom.ty"):
 
     from topo.command import save_snapshot
     locn = normalize_path(os.path.join('tests',data_filename+'.typ_'))
-    print "Saving snapshot to %s"%locn
+    print("Saving snapshot to %s"%locn)
     save_snapshot(locn)
 
 
@@ -533,11 +533,11 @@ def compare_with_and_without_snapshot_LoadSnapshot(script="models/lissom.ty"):
     snapshot_filename=os.path.split(script)[1]+"_PICKLETEST.typ_"
 
     locn = resolve_path(os.path.join('tests',data_filename))
-    print "Loading pickle from %s"%locn
+    print("Loading pickle from %s"%locn)
     try:
         data = pickle.load(open(locn,"rb"))
     except IOError:
-        print "\nData file '"+data_filename+"' could not be opened; run _A() first"
+        print("\nData file '"+data_filename+"' could not be opened; run _A() first")
         raise
 
     # retrieve parameters used when script was run
@@ -555,25 +555,25 @@ def compare_with_and_without_snapshot_LoadSnapshot(script="models/lissom.ty"):
     from topo.command import load_snapshot
 
     locn = resolve_path(os.path.join('tests',snapshot_filename))
-    print "Loading snapshot at %s"%locn
+    print("Loading snapshot at %s"%locn)
 
     try:
         load_snapshot(locn)
     except IOError:
-        print "\nPickle file '"+snapshot_filename+"' could not be opened; run _B() first."
+        print("\nPickle file '"+snapshot_filename+"' could not be opened; run _B() first.")
         raise
 
     assert topo.sim.time()==break_at
     assert_array_equal(data[topo.sim.time()],topo.sim[look_at].activity,
                        err_msg="\nAt topo.sim.time()=%d"%topo.sim.time())
-    print "Match at %s after loading snapshot"%topo.sim.time()
+    print("Match at %s after loading snapshot"%topo.sim.time())
 
     topo.sim.run(run_for-break_at)
 
     assert_array_equal(data[topo.sim.time()],topo.sim[look_at].activity,
                        err_msg="\nAt topo.sim.time()=%d"%topo.sim.time())
 
-    print "Match at %s after running loaded snapshot"%topo.sim.time()
+    print("Match at %s after running loaded snapshot"%topo.sim.time())
 
 ### end Snapshot tests
 ###########################################################################
@@ -594,7 +594,7 @@ def pickle_unpickle_everything(existing_pickles=None):
             try:
                 pickles[str(instance)]=pickle.dumps(instance)
             except:
-                print "Error pickling %s:"%instance
+                print("Error pickling %s:"%instance)
                 pickle_errors+=1
                 traceback.print_exc()
     else:
@@ -602,20 +602,20 @@ def pickle_unpickle_everything(existing_pickles=None):
 
     unpickle_errors = 0
 
-    for instance_name,pickled_instance in pickles.items():
+    for instance_name,pickled_instance in list(pickles.items()):
         try:
             pickle.loads(pickled_instance)
         except:
-            print "Error unpickling %s"%instance_name
+            print("Error unpickling %s"%instance_name)
             unpickle_errors+=1
             traceback.print_exc()
 
-    print
+    print()
 
     if existing_pickles is None:
-        print "Instances that failed to pickle: %s"%pickle_errors
+        print("Instances that failed to pickle: %s"%pickle_errors)
 
-    print "Pickled instances that failed to unpickle: %s"%unpickle_errors
+    print("Pickled instances that failed to unpickle: %s"%unpickle_errors)
 
     return pickle_errors+unpickle_errors
 ###########################################################################
@@ -647,7 +647,7 @@ def test_runbatch():
 
     def exists(endpart):
         whole = os.path.join(new_output_path,base+endpart)
-        print "Checking for %s"%whole
+        print("Checking for %s"%whole)
         return os.path.isfile(whole)
 
     assert exists(".global_params.pickle")
@@ -656,7 +656,7 @@ def test_runbatch():
     assert exists("_000001.00_script_repr.ty")
     assert exists("_000001.00.typ")
 
-    print "Deleting %s"%param.normalize_path.prefix
+    print("Deleting %s"%param.normalize_path.prefix)
     shutil.rmtree(param.normalize_path.prefix)
     param.normalize_path.prefix=original_output_path
 ###########################################################################
@@ -689,9 +689,9 @@ def run_multiple_density_comparisons(ref_script):
     results = []
     errs=[]
     for cmd in cmds:
-        print
-        print "************************************************************"
-        print "Executing '%s'"%cmd
+        print()
+        print("************************************************************")
+        print("Executing '%s'"%cmd)
 
 #        errout = os.tmpfile()#StringIO.StringIO()
 
@@ -721,20 +721,20 @@ def run_multiple_density_comparisons(ref_script):
         errs.append(l[L::])
         errout.close()
 
-    print "================================================================================"
-    print
-    print "SUMMARY"
-    print
+    print("================================================================================")
+    print()
+    print("SUMMARY")
+    print()
     nerr = 0
     for xi,result,err in zip(x,results,errs):
-        print
-        print "* %s ... BaseRN=%s,BaseN=%s"%(result,xi[0],xi[1])
+        print()
+        print("* %s ... BaseRN=%s,BaseN=%s"%(result,xi[0],xi[1]))
         if result=="FAIL":
             e = ""
-            print e.join(err)
+            print(e.join(err))
 
             nerr+=1
-    print "================================================================================"
+    print("================================================================================")
 
     return nerr
 

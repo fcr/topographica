@@ -14,7 +14,7 @@ import math
 
 import topo
 from topo.transferfn.misc import PatternCombine
-import analysis
+from . import analysis
 
 # Set up appropriate defaults for analysis
 import topo.analysis.featureresponses
@@ -141,7 +141,7 @@ def afferent_CFs(times):
     density, area = float(density), float(area)
     spacing = np.linspace(-area/2.0, area/2.0, density+2)[1:-1]
     X, Y = np.meshgrid(spacing, spacing)
-    sheet_coords = zip(X.flatten(),Y.flatten())
+    sheet_coords = list(zip(X.flatten(),Y.flatten()))
     coords = [sheet.sheet2matrixidx(x,y) for (x,y) in sheet_coords]
     cfs = np.dstack([projection.cfs[x][y].weights for (x,y) in coords])
     coords =  np.vstack([np.array(coord) for coord in coords])

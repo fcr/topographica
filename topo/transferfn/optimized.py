@@ -110,7 +110,7 @@ class CFPOF_DivisiveNormalizeL1(CFPOutputFn):
             norm_value = self.single_cf_fn.norm_value
             for cf,i in iterator():
                 current_sum=cf.norm_total
-		if current_sum > 0.0000000000001:
+                if current_sum > 0.0000000000001:
                     factor = norm_value/current_sum
                     cf.weights *= factor
                 del cf.norm_total
@@ -119,7 +119,7 @@ class CFPOF_DivisiveNormalizeL1(CFPOutputFn):
 provide_unoptimized_equivalent("CFPOF_DivisiveNormalizeL1_opt","CFPOF_DivisiveNormalizeL1",locals())
 
 
-__all__ = list(set([k for k,v in locals().items() if isinstance(v,type) and
+__all__ = list(set([k for k,v in list(locals().items()) if isinstance(v,type) and
                     (issubclass(v,TransferFn) or issubclass(v,CFPOutputFn))]))
 __all__.remove("CFPOutputFn")
 __all__.remove("TransferFn")

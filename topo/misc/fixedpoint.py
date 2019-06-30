@@ -186,8 +186,8 @@ class FixedPoint(object):
             self.n = n
             return
 
-        if isinstance(value, type(42)) or isinstance(value, type(42L)):
-            self.n = long(value) * _tento(p)
+        if isinstance(value, type(42)) or isinstance(value, type(42)):
+            self.n = int(value) * _tento(p)
             return
 
         if isinstance(value, type(self)):
@@ -207,7 +207,7 @@ class FixedPoint(object):
             # up all bits in 2 iterations for all known binary double-
             # precision formats, and small enough to fit in an int.
             CHUNK = 28
-            top = 0L
+            top = 0
             # invariant: |value| = (top + f) * 2**e exactly
             while f:
                 f = math.ldexp(f, CHUNK)
@@ -225,7 +225,7 @@ class FixedPoint(object):
             if e >= 0:
                 n = top << e
             else:
-                n = self._roundquotient(top, 1L << -e)
+                n = self._roundquotient(top, 1 << -e)
             if value < 0:
                 n = -n
             self.n = n
@@ -233,7 +233,7 @@ class FixedPoint(object):
 
         if isinstance(value, type(42-42j)):
             raise TypeError("can't convert complex to FixedPoint: " +
-                            `value`)
+                            repr(value))
 
         # can we coerce to a float?
         yes = 1
@@ -248,14 +248,14 @@ class FixedPoint(object):
         # similarly for long
         yes = 1
         try:
-            aslong = long(value)
+            aslong = int(value)
         except:
             yes = 0
         if yes:
             self.__init__(aslong, p)
             return
 
-        raise TypeError("can't convert to FixedPoint: " + `value`)
+        raise TypeError("can't convert to FixedPoint: " + repr(value))
 
     def get_precision(self):
         """Return the precision of this FixedPoint.
@@ -280,9 +280,9 @@ class FixedPoint(object):
             p = int(precision)
         except:
             raise TypeError("precision not convertable to int: " +
-                            `precision`)
+                            repr(precision))
         if p < 0:
-            raise ValueError("precision must be >= 0: " + `precision`)
+            raise ValueError("precision must be >= 0: " + repr(precision))
 
         if p > self.p:
             self.n = self.n * _tento(p - self.p)
@@ -305,7 +305,7 @@ class FixedPoint(object):
                "." + frac
 
     def __repr__(self):
-        return "FixedPoint" + `(str(self), self.p)`
+        return "FixedPoint" + repr((str(self), self.p))
 
     def copy(self):
         return _mkFP(self.n, self.p, type(self))
@@ -326,7 +326,7 @@ class FixedPoint(object):
         return state
 
     def __setstate__(self,state):
-        for k,v in state.items():
+        for k,v in list(state.items()):
             setattr(self,k,v)
         self.unpickle()
 
@@ -355,7 +355,7 @@ class FixedPoint(object):
         n, p = self.__reduce()
         return hash(n) ^ hash(p)
 
-    def __nonzero__(self):
+    def __bool__(self):
         """ Returns true if this FixedPoint is not equal to zero"""
         return self.n != 0
 
@@ -451,7 +451,7 @@ class FixedPoint(object):
 
            x.frac() + long(x) == x
         """
-        return self - long(self)
+        return self - int(self)
 
     def _roundquotient(self, x, y):
         """
@@ -484,7 +484,7 @@ def _tento(n, cache={}):
     try:
         return cache[n]
     except KeyError:
-        answer = cache[n] = 10L ** n
+        answer = cache[n] = 10 ** n
         return answer
 
 def _norm(x, y, isinstance=isinstance, FixedPoint=FixedPoint,
@@ -550,7 +550,7 @@ def _string2exact(s):
     """Return n, p s.t. float string value == n * 10**p exactly."""
     m = _parser(s)
     if m is None:
-        raise ValueError("can't parse as number: " + `s`)
+        raise ValueError("can't parse as number: " + repr(s))
 
     exp = m.group('exp')
     if exp is None:
@@ -569,7 +569,7 @@ def _string2exact(s):
     assert intpart
     assert fracpart
 
-    i, f = long(intpart), long(fracpart)
+    i, f = int(intpart), int(fracpart)
     nfrac = len(fracpart)
     i = i * _tento(nfrac) + f
     exp = exp - nfrac
@@ -604,8 +604,8 @@ def _test():
     assert 1 + o == o + 1 == fp(" +00.000011e+5  ")
     assert 1/o == 10
     assert o + t == t + o == -o
-    assert 2.0 * t == t * 2 == "2" * t == o/o * 2L * t
-    assert 1 - t == -(t - 1) == fp(6L)/5
+    assert 2.0 * t == t * 2 == "2" * t == o/o * 2 * t
+    assert 1 - t == -(t - 1) == fp(6)/5
     assert t*t == 4*o*o == o*4*o == o*o*4
     assert fp(2) - "1" == 1
     assert float(-1/t) == 5.0
@@ -625,16 +625,16 @@ def _test():
     o.set_precision(2)
     assert o == 1
     x = fp(1.99)
-    assert long(x) == -long(-x) == 1L
     assert int(x) == -int(-x) == 1
-    assert x == long(x) + x.frac()
-    assert -x == long(-x) + (-x).frac()
+    assert int(x) == -int(-x) == 1
+    assert x == int(x) + x.frac()
+    assert -x == int(-x) + (-x).frac()
     assert fp(7) % 4 == 7 % fp(4) == 3
     assert fp(-7) % 4 == -7 % fp(4) == 1
     assert fp(-7) % -4 == -7 % fp(-4) == -3
     assert fp(7.0) % "-4.0" == 7 % fp(-4) == -1
     assert fp("5.5") % fp("1.1") == fp("5.5e100") % fp("1.1e100") == 0
-    assert divmod(fp("1e100"), 3) == (long(fp("1e100")/3), 1)
+    assert divmod(fp("1e100"), 3) == (int(fp("1e100")/3), 1)
 
 if __name__ == '__main__':
     _test()

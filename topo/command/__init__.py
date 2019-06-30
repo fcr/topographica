@@ -10,7 +10,7 @@ errors that would interrupt e.g. a long batch run of simulation work,
 no matter what the context from which they are called.
 """
 
-import cPickle as pickle
+import pickle as pickle
 import sys
 import os
 import re
@@ -65,15 +65,15 @@ class CommandMetaclass(ParameterizedMetaclass):
     automatically wrapped so that any exception occurring inside
     __call__() will be passed to the class's _except() method.
     """
-    def __new__(mcs,classname,bases,classdict):
+    def __new__(cls,classname,bases,classdict):
         if '__call__' in classdict:
-            classdict['__call__'] = mcs._safecall(classdict['__call__'])
+            classdict['__call__'] = cls._safecall(classdict['__call__'])
             #assert '_except' in classdic
         # else it is probably abstract, or something
-        return ParameterizedMetaclass.__new__(mcs,classname,bases,classdict)
+        return ParameterizedMetaclass.__new__(cls,classname,bases,classdict)
 
     @classmethod
-    def _safecall(mcs,fn):
+    def _safecall(cls,fn):
         """
         Wrap fn with caller, which catches any exception raised inside
         fn() and passes it to _except().
@@ -81,7 +81,7 @@ class CommandMetaclass(ParameterizedMetaclass):
         def caller(self,*args,**kw):
             try:
                 return fn(self,*args,**kw)
-            except Exception, e:
+            except Exception as e:
                 # Mis-invoked call should raise error as normal.
                 if isinstance(e,TypeError):
                     import inspect
@@ -99,12 +99,11 @@ class CommandMetaclass(ParameterizedMetaclass):
 
 
 
-class Command(ParameterizedFunction):
+class Command(ParameterizedFunction, metaclass=CommandMetaclass):
     """
     Parameterized command: any error when the command is run (called)
     will not raise an exception, but will instead generate a warning.
     """
-    __metaclass__ = CommandMetaclass
     __abstract = True
 
     def _except(self,e):
@@ -134,7 +133,7 @@ class ImportErrorObject(object):
         self.__dict__['_ImportErrorObject__module_name'] = module_name
     def _raise(self):
         #param.Parameterized().warning("err:%s"%self.module_name)
-        raise ImportError, "No module named %s. Install %s to get this functionality."%(self.__module_name,self.__module_name)
+        raise ImportError("No module named %s. Install %s to get this functionality."%(self.__module_name,self.__module_name))
         return None
     def __call__(self,*args,**kw):
         self._raise()
@@ -175,14 +174,14 @@ def save_input_generators():
     # ensure EPs get started (if save_input_generators is called before the simulation is run())
     topo.sim.run(0.0)
 
-    generator_sheets = topo.sim.objects(GeneratorSheet).values()
+    generator_sheets = list(topo.sim.objects(GeneratorSheet).values())
     for sheet in generator_sheets:
         sheet.push_input_generator()
 
 
 def restore_input_generators():
     """Restore previously saved input_generators for all of topo.sim's GeneratorSheets."""
-    generator_sheets = topo.sim.objects(GeneratorSheet).values()
+    generator_sheets = list(topo.sim.objects(GeneratorSheet).values())
     for sheet in generator_sheets:
         sheet.pop_input_generator()
 
@@ -214,12 +213,12 @@ class runscript(param.ParameterizedFunction):
 
         from topo.misc.commandline import global_params
         ns = ns if ns else self.ns
-        for (key, val) in kwargs.items():
+        for (key, val) in list(kwargs.items()):
             global_params.exec_in_context('%s=%s' % (key,val))
 
         source_path = param.resolve_path(source_file)
         code = compile(open(source_path, 'r').read(), "<execution>", "exec")
-        exec code in ns #globals and locals
+        exec(code, ns) #globals and locals
         self.push(ns)
         if self.load:
             topo.sim(verbose=kwargs.get('verbose', False))
@@ -434,7 +433,7 @@ def _get_vc_commands():
     vc_types = {'git':["status","diff",["log","-n1"],["svn","log","--limit=1"]],
                 'svn':["info","status","diff"],
                 'bzr':['info','status','diff']}
-    for vc_type,commands in vc_types.items():
+    for vc_type,commands in list(vc_types.items()):
         if os.path.exists(".%s"%vc_type):
             return vc_type,commands
 
@@ -461,7 +460,7 @@ def _print_vc_info(filename):
             # it impossible to label the commands).
             subprocess.Popen(fullcmd,stdout=f,stderr=subprocess.STDOUT)
     except:
-        print "Unable to retrieve version control information."
+        print("Unable to retrieve version control information.")
     finally:
         f.close()
 
@@ -472,7 +471,7 @@ def _save_parameters(p,filename):
     g = {'global_params_specified':p,
          'global_params_all':dict(global_params.get_param_values())}
 
-    for d in g.values():
+    for d in list(g.values()):
         if 'name' in d:
             del d['name']
         if 'print_level' in d:
@@ -505,7 +504,7 @@ class param_formatter(ParameterizedFunction):
         # present in params but not in map
         unspecified_in_map = sorted(set(params).difference(set(self.map)))
         # present in params and in map, preserving order of map
-        specified_in_map = [n for n in self.map.keys() if n in params]
+        specified_in_map = [n for n in list(self.map.keys()) if n in params]
 
         for pname in specified_in_map+unspecified_in_map:
             val = params[pname]
@@ -535,7 +534,7 @@ def default_analysis_function():
         save_plotgroup(pg,use_cached_results=True)
 
     # Plot projections from each measured map
-    measured_sheets = [s for s in topo.sim.objects(ProjectionSheet).values()
+    measured_sheets = [s for s in list(topo.sim.objects(ProjectionSheet).values())
                        if hasattr(s,'measure_maps') and s.measure_maps]
     for s in measured_sheets:
         for p in s.in_connections:
@@ -543,7 +542,7 @@ def default_analysis_function():
 
     # Test response to a standardized pattern
     from imagen import Gaussian
-    from analysis import pattern_present
+    from .analysis import pattern_present
     from math import pi
     pattern_present(inputs=Gaussian(orientation=pi/4,aspect_ratio=4.7))
     save_plotgroup("Activity",saver_params={"filename_suffix":"_45d"})
@@ -760,14 +759,14 @@ class run_batch(ParameterizedFunction):
         simpath = os.path.join(metadata_dir, simname)
 
         if os.path.isdir(normalize_path.prefix):
-            print "Batch run: Warning -- directory already exists!"
-            print "Run aborted; wait one minute before trying again, or else rename existing directory: \n" + \
-                  normalize_path.prefix
+            print("Batch run: Warning -- directory already exists!")
+            print("Run aborted; wait one minute before trying again, or else rename existing directory: \n" + \
+                  normalize_path.prefix)
 
             sys.exit(-1)
         else:
             os.makedirs(metadata_dir)
-            print "Batch run output will be in " + normalize_path.prefix
+            print("Batch run output will be in " + normalize_path.prefix)
 
 
         if p.vc_info:
@@ -805,13 +804,13 @@ class run_batch(ParameterizedFunction):
         batch_output.write(command_used_to_start+"\n")
         sys.stdout = MultiFile(batch_output,sys.stdout)
 
-        print
-        print hostinfo
-        print topographicalocation
-        print topolocation
-        print scriptlocation
-        print
-        print startnote
+        print()
+        print(hostinfo)
+        print(topographicalocation)
+        print(topolocation)
+        print(scriptlocation)
+        print()
+        print(startnote)
 
         from topo.misc.commandline import auto_import_commands
         auto_import_commands()
@@ -835,7 +834,7 @@ class run_batch(ParameterizedFunction):
         error_count = 0
         initial_warning_count = param.parameterized.warning_count
         try:
-            execfile(script_file,__main__.__dict__) #global_params.context
+            exec(compile(open(script_file, "rb").read(), script_file, 'exec'),__main__.__dict__) #global_params.context
             global_params.check_for_unused_names()
             if p.save_global_params:
                 _save_parameters(p.extra_keywords(), simpath+".global_params.pickle")
@@ -901,12 +900,12 @@ class run_batch(ParameterizedFunction):
 
 
 
-        print "\nBatch run completed at %s." % time.strftime("%a %d %b %Y %H:%M:%S +0000",
-                                                             time.gmtime())
-        print "There were %d error(s) and %d warning(s)%s." % \
+        print("\nBatch run completed at %s." % time.strftime("%a %d %b %Y %H:%M:%S +0000",
+                                                             time.gmtime()))
+        print("There were %d error(s) and %d warning(s)%s." % \
               (error_count,(param.parameterized.warning_count-initial_warning_count),
                ((" (plus %d warning(s) prior to entering run_batch)"%initial_warning_count
-                 if initial_warning_count>0 else "")))
+                 if initial_warning_count>0 else ""))))
 
         # restore stdout
         sys.stdout = sys.__stdout__
@@ -922,7 +921,7 @@ def wipe_out_activity():
     # recursively using methods implemented separately on each class,
     # if there are often new types of objects created that store an
     # activity value.
-    for s in topo.sim.objects(Sheet).values():
+    for s in list(topo.sim.objects(Sheet).values()):
         s.activity*=0.0
         for c in s.in_connections:
             if hasattr(c,'activity'):
@@ -937,7 +936,7 @@ def n_bytes():
     This estimate is a lower bound only, based primarily on memory for
     the matrices used for activity and connections.
     """
-    return sum([s.n_bytes() for s in topo.sim.objects(Sheet).values()])
+    return sum([s.n_bytes() for s in list(topo.sim.objects(Sheet).values())])
 
 
 
@@ -945,13 +944,13 @@ def n_conns():
     """
     Count the number of connections in all ProjectionSheets in the current Simulation.
     """
-    return sum([s.n_conns() for s in topo.sim.objects(ProjectionSheet).values()])
+    return sum([s.n_conns() for s in list(topo.sim.objects(ProjectionSheet).values())])
 
 
 def print_sizes():
     """Format the results from n_conns() and n_bytes() for use in batch output."""
-    print "Defined %d-connection network; %0.0fMB required for weight storage." % \
-    (n_conns(),max(n_bytes()/1024.0/1024.0,1.0))
+    print("Defined %d-connection network; %0.0fMB required for weight storage." % \
+    (n_conns(),max(n_bytes()/1024.0/1024.0,1.0)))
 
 # added these two function to the PatternDrivenAnalysis hooks
 PatternDrivenAnalysis.pre_presentation_hooks.append(topo.sim.state_push)
@@ -961,7 +960,7 @@ PatternDrivenAnalysis.post_presentation_hooks.append(topo.sim.state_pop)
 
 # maybe an explicit list would be better?
 import types
-_public = list(set([_k for _k,_v in locals().items()
+_public = list(set([_k for _k,_v in list(locals().items())
                     if isinstance(_v,types.FunctionType) or
                     (isinstance(_v,type) and issubclass(_v,ParameterizedFunction))
                     and not _v.__name__.startswith('_')]))
@@ -975,4 +974,4 @@ _public += [
 # Automatically discover all .py files in this directory.
 import os,fnmatch
 __all__ = _public + [f.split('.py')[0] for f in os.listdir(__path__[0]) if fnmatch.fnmatch(f,'[!._]*.py')]
-del f,os,fnmatch
+del os,fnmatch

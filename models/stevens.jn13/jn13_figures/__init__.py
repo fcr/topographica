@@ -2,7 +2,7 @@ import math, os, shutil, uuid
 import lancet
 import imagen
 import numpy as np
-from lib import rasterplots, compose, vectorplots, analysis
+from .lib import rasterplots, compose, vectorplots, analysis
 
 class Display(object):
 
@@ -92,7 +92,7 @@ def OR_analysis(row, template_dir, build_dir, name='OR_analysis',
 
     # Save the CFs (if enabled)
     if cfs and row['afferent_CFs'] is np.nan:
-        print "No afferent connection fields found in the given row"
+        print("No afferent connection fields found in the given row")
     elif cfs:
         cf_block = rasterplots.cf_image(*row['afferent_CFs'],
                                          border=5, width=1, height=8, pos=(4,1))
@@ -175,8 +175,8 @@ def fig03(template_dir, build_dir, L_seed=20, L_contrast=15,
                                & (L_frame['contrast']==L_contrast)])
     L_pwds = L_maps['rho']
 
-    iterables = [zip(GCAL_maps['units_per_hypercolumn'], GCAL_pwds),
-                 zip(L_maps['units_per_hypercolumn'], L_pwds)]
+    iterables = [list(zip(GCAL_maps['units_per_hypercolumn'], GCAL_pwds)),
+                 list(zip(L_maps['units_per_hypercolumn'], L_pwds))]
 
     scatter = vectorplots.model_scatterplot(iterables, ['r','b'])
     savefig_opts = dict(transparent=True, format='svg', bbox_inches='tight', pad_inches=0)
@@ -185,7 +185,7 @@ def fig03(template_dir, build_dir, L_seed=20, L_contrast=15,
 
     GCAL_fmts = [('[pk1]','%.2f'),('[ar1]','%.2f'), ('[pd1]','%.3f'),('[pw1]','%d')]
     L_fmts=  [('[pk2]','%.2f'),('[ar2]','%.2f'), ('[pd2]','%.3f'),('[pw2]','%d')]
-    labels = zip(GCAL_labels + L_labels, GCAL_fmts + L_fmts)
+    labels = list(zip(GCAL_labels + L_labels, GCAL_fmts + L_fmts))
     mapping=dict((label, fmt%v) for (v,(label,fmt)) in labels)
     svg_path = os.path.join(output_dir, '%s.svg' % name)
     return Display(compose.apply_template(template_path, svg_path,
@@ -297,7 +297,7 @@ def fig06_09(template_dir, build_dir, fig, contrasts=(10,25,100),
         missing_contrasts = set(df['contrast']) ^set(all_contrasts)
         if missing_contrasts != set():
             missing = ', '.join(str(el) for el in missing_contrasts)
-            print "Warning: Contrast values %s are missing for seed %d" % (missing, seed)
+            print("Warning: Contrast values %s are missing for seed %d" % (missing, seed))
         # Each selectivity is a whole map, these selectivities are averages across the map
         mean_sels = [get_sel(row).mean() for row in sorted_rows]
         # Computing map quality based on the pinwheel density
@@ -385,7 +385,7 @@ def fig10(template_dir, build_dir, bound_radius=0.6,  selectivity_norm=0.07138,
         # Note: ROI not applied and the values of 3 are due to historical reasons
         development_info.append((time,pref[3:-3, 3:-3], np.mean(sel[3:-3,3:-3])))
 
-    ts, prefs, mean_sels = zip(*sorted(development_info))
+    ts, prefs, mean_sels = list(zip(*sorted(development_info)))
     # We only need the stabilities up till 10000
     fname = os.path.join(output_dir, 'model_development.svg')
     development_fig = vectorplots.map_development_plot(analysis.stability_index(prefs),

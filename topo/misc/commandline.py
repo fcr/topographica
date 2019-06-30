@@ -49,7 +49,7 @@ except ImportError:
         from IPython.Shell import IPShell  # pyflakes:ignore (try/except import)
         ipython_shell_interface = "IPython.Shell"
     except ImportError:
-        print "Note: IPython is not available; using basic interactive Python prompt instead."
+        print("Note: IPython is not available; using basic interactive Python prompt instead.")
 
 
 
@@ -125,7 +125,7 @@ class GlobalParams(Parameterized,OptionalSingleton):
         Set in self.context all name=val pairs specified in **params,
         tracking new names and warning of any replacements.
         """
-        for name,val in params.items():
+        for name,val in list(params.items()):
             if name in self.context:
                 self.warning("Replacing previous value of '%s' with '%s'"%(name,val))
             self.context[name]=val
@@ -138,11 +138,11 @@ class GlobalParams(Parameterized,OptionalSingleton):
         """
         ## contains elaborate scheme to detect what is specified by
         ## -s, and to warn about any replacement
-        current_ids = dict([(k,id(v)) for k,v in self.context.items()])
+        current_ids = dict([(k,id(v)) for k,v in list(self.context.items())])
 
-        exec arg in self.context
+        exec(arg, self.context)
 
-        for k,v in self.context.items():
+        for k,v in list(self.context.items()):
             if k in self.unused_names and id(v)!=current_ids[k]:
                 self.warning("Replacing previous value of '%s' with '%s'"%(k,v))
 
@@ -162,7 +162,7 @@ class GlobalParams(Parameterized,OptionalSingleton):
 ##                 self.warning("'%s' still exists in global_params.context"%name)
 
         # detect duplicate param value that wasn't used (e.g. specified with after script)
-        for name,val in self.params().items():
+        for name,val in list(self.params().items()):
             if name in self.context:
                 if self.context[name]!=self.inspect_value(name):
                     self.warning("'%s=%s' is unused."%(name,self.context[name]))
@@ -176,7 +176,7 @@ class GlobalParams(Parameterized,OptionalSingleton):
           sets the value of the parameter in this object to that value, and then removes
           the name from context
         """
-        for p_name,p_obj in kw.items():
+        for p_name,p_obj in list(kw.items()):
             self._add_parameter(p_name,p_obj)
             if p_name in self.context:
                 setattr(self,p_name,self.context[p_name])
@@ -261,9 +261,9 @@ class CommandPrompt(IPCommandPromptHandler):
       # Use one of the predefined formats:
       CommandPrompt.set_format(CommandPrompt.basic_format)
       # Just print the command number:
-      CommandPrompt.set_format('\# ')
+      CommandPrompt.set_format('#')
       # Print the command number but don't use color:
-      CommandPrompt.set_format('\N ')
+      CommandPrompt.set_format('\n')
       # Print the value of my_var at each prompt:
       CommandPrompt.set_format('{my_var}>>> ')
     """
@@ -383,7 +383,7 @@ def set_output_path(path):
         cmdline_main.message("Creating %s",path)
         try:
             os.makedirs(path)
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EEXIST:
                 cmdline_main.warning("Unable to set output path %s",path)
 
@@ -437,7 +437,7 @@ enable verbose messaging output""")
 
 def V_action(option,opt_str,value,parser):
     """Callback function for the -V option."""
-    print topo.__version__
+    print(topo.__version__)
     sys.exit()
 
 topo_parser.add_option("-V","--version",action="callback",callback=V_action,dest="version",default=False,help="""\
@@ -461,7 +461,7 @@ def l_action(option,opt_str,value,parser):
     """Callback function for the -l option."""
     boolean_option_action(option,opt_str,value,parser)
     from topo.misc.legacy import install_legacy_support
-    print "Enabling legacy support."
+    print("Enabling legacy support.")
     install_legacy_support()
 
 topo_parser.add_option("-l","--legacy",action="callback",callback=l_action,dest="legacy",default=False,help="""\
@@ -545,7 +545,7 @@ something_executed=False
 def c_action(option,opt_str,value,parser):
     """Callback function for the -c option."""
     #print "Processing %s '%s'" % (opt_str,value)
-    exec value in __main__.__dict__
+    exec(value, __main__.__dict__)
     global something_executed
     something_executed=True
 
@@ -561,7 +561,7 @@ def n_action(option,opt_str,value,parser):
         from notebook.notebookapp import NotebookApp
         jupyter = True
     except: # IPython <4.0
-        from IPython.html.notebookapp import NotebookApp
+        from .IPython.html.notebookapp import NotebookApp
         jupyter = False
 
     if jupyter:
@@ -620,8 +620,8 @@ def auto_import_commands():
     for f in os.listdir(topo_path):
         if re.match('^[^_.].*\.py$',f):
             modulename = re.sub('\.py$','',f)
-            exec "from topo.command."+modulename+" import *" in __main__.__dict__
-    exec "from topo.command import *" in __main__.__dict__
+            exec("from topo.command."+modulename+" import *", __main__.__dict__)
+    exec("from topo.command import *", __main__.__dict__)
 
 def a_action(option,opt_str,value,parser):
     """Callback function for the -a option."""
@@ -699,23 +699,23 @@ def t_action(option,opt_str,value,parser):
 
     if value is not None:
         if value not in ["quick","exhaustive"] and value not in target_description:
-            print "\nCould not find test target %r.\n" % value
+            print("\nCould not find test target %r.\n" % value)
             local_targets =['list']
         else:
             global_params.exec_in_context("targets=['%s']" % value)
             # Call runtests.run_tests() as if it were a proper module
             ns={}
-            execfile('./topo/tests/runtests.py',ns,ns)
+            exec(compile(open('./topo/tests/runtests.py', "rb").read(), './topo/tests/runtests.py', 'exec'),ns,ns)
             return_code += len(ns["run_tests"]())
 
 
 
     if "list" in local_targets:
-        available_items = sorted((target_description.items() + local_target_descriptions.items()))
+        available_items = sorted((list(target_description.items()) + list(local_target_descriptions.items())))
         max_len = max(len(k) for k,_ in available_items)
-        print ("---------------\nAvailable tests\n---------------\n%s"
+        print(("---------------\nAvailable tests\n---------------\n%s"
                % "\n".join('%s%s : %s'% (k,' '*(max_len-len(k)),v)
-                           for k,v in available_items))
+                           for k,v in available_items)))
 
     global something_executed
     something_executed=True
@@ -749,8 +749,8 @@ def exec_startup_files():
 
     for startup_file in (rcpath,inipath):
         if os.path.exists(startup_file):
-            print "Executing user startup file %s" % (startup_file)
-            execfile(startup_file,__main__.__dict__)
+            print("Executing user startup file %s" % (startup_file))
+            exec(compile(open(startup_file, "rb").read(), startup_file, 'exec'),__main__.__dict__)
 
     #####
     # CEBALERT: locations we used to use on Windows and OS X. Should
@@ -771,8 +771,8 @@ def process_argv(argv):
     """
     # Initial preparation
     import __main__
-    for (k,v) in global_constants.items():
-        exec '%s = %s' % (k,v) in __main__.__dict__
+    for (k,v) in list(global_constants.items()):
+        exec('%s = %s' % (k,v), __main__.__dict__)
 
     # Allow param.normalize_path.prefix to be overridden in the
     # startup files, but otherwise force it to exist before doing
@@ -808,7 +808,7 @@ def process_argv(argv):
             sys.path.insert(0,filedir) # Allow imports relative to this file's path
             sim_name_from_filename(filename) # Default value of topo.sim.name
 
-            execfile(filename,__main__.__dict__)
+            exec(compile(open(filename, "rb").read(), filename, 'exec'),__main__.__dict__)
             something_executed=True
 
         if not args:
@@ -824,8 +824,8 @@ def process_argv(argv):
     ## INTERACTIVE SESSION BEGINS HERE (i.e. can't have anything but
     ## some kind of cleanup code afterwards)
     if os.environ.get('PYTHONINSPECT'):
-        print "Output path: %s" % param.normalize_path.prefix
-        print BANNER
+        print("Output path: %s" % param.normalize_path.prefix)
+        print(BANNER)
         # CBALERT: should probably allow a way for users to pass
         # things to IPython? Or at least set up some kind of
         # topographica ipython config file. Right now, a topo_parser

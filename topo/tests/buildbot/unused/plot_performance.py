@@ -116,13 +116,13 @@ def get_all_stats():
     return build_stats
 
 def transpose(x):
-    return zip(*x)
+    return list(zip(*x))
 
 def plot_stats(stats):
     # flatten stats
     test_results = defaultdict(list)
-    for svn_rev, results in sorted(stats.iteritems()):
-        for test, duration in results.iteritems():
+    for svn_rev, results in sorted(stats.items()):
+        for test, duration in results.items():
             test_results[test].append((svn_rev, duration))
 
     # plot

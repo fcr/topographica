@@ -219,7 +219,7 @@ class ModelCGCAL(ModelGCAL):
 
         """
         filtered =   ['tsettle', 'strict_tsettle'] if self.continuous else []
-        params =  {k:v for k,v in super(ModelCGCAL, self).LGN(properties).items()
+        params =  {k:v for k,v in list(super(ModelCGCAL, self).LGN(properties).items())
                    if k not in filtered}
 
         lgn_time_constant = (self.hysteresis_constant(self.lgn_hysteresis)
@@ -232,7 +232,7 @@ class ModelCGCAL(ModelGCAL):
     @Model.Continuous
     def V1(self, properties):
         parameters = super(ModelCGCAL, self).V1(properties)
-        parameters = {k:v for k,v in parameters.items()
+        parameters = {k:v for k,v in list(parameters.items())
                       if k not in (['tsettle'] if self.continuous else [])}
 
         v1_time_constant = (self.hysteresis_constant(self.v1_hysteresis)
@@ -340,7 +340,7 @@ class VonMisesORCoordinator(FeatureCoordinator):
 #===========================#
 
 
-from gmpy import mpq
+from gmpy2 import mpq
 
 class distort(object):
 

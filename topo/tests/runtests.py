@@ -68,7 +68,7 @@ def which(program):
 
 xvfb = which('xvfb-run')
 if not xvfb:
-    print "xvfb-run not found; any GUI components that are run will display windows"
+    print("xvfb-run not found; any GUI components that are run will display windows")
 else:
     xvfb = xvfb + " -a"
 
@@ -85,7 +85,7 @@ scripts_dir = param.resolve_path(".",path_to_file=False) ### XXX
 topographica_script = xvfb + " " + timing_cmd + " " + sys.argv[0] + " " +  " "
 
 def _runc(cmd):
-    print cmd
+    print(cmd)
     return os.system(cmd)
 
 
@@ -262,34 +262,34 @@ def run_tests():
     if p.targets==['quick']:
         targets = ['batch','pickle','scriptrepr']
     elif p.targets==['exhaustive']:
-        targets = target.keys()
+        targets = list(target.keys())
     elif p.targets==['speed']:
-        targets = speedtarget.keys()
+        targets = list(speedtarget.keys())
     else:
         targets = p.targets
         
     _display = os.environ.get('DISPLAY')
     if 'gui' in targets and (_display is None or _display==''):
         if os.environ.get('TOPO_SKIP_RUNTESTS_GUI_IF_NO_DISPLAY')=='1':
-            print "No DISPLAY; skipping gui tests."
+            print("No DISPLAY; skipping gui tests.")
             targets.remove('gui')
         
-    print "Running: %s" % list_tests(targets)
-    print
+    print("Running: %s" % list_tests(targets))
+    print()
 
     target.update(speedtarget)
 
     for name in targets:
-        print "*** " + name
+        print("*** " + name)
         for cmd in target[name]:
             if _runc(cmd) > 0:
                 if name not in errors:
                     errors.append(name)
-    print
-    print "="*60
-    print
-    print "runtests: targets with errors: %s %s" % (len(errors),list_tests(errors))
-    print "runtests: ran %s targets %s" % (len(targets),list_tests(targets))
+    print()
+    print("="*60)
+    print()
+    print("runtests: targets with errors: %s %s" % (len(errors),list_tests(errors)))
+    print("runtests: ran %s targets %s" % (len(targets),list_tests(targets)))
     
     return errors
 
@@ -315,7 +315,7 @@ def start():
     errors = run_tests()
 
     if len(errors)>0:
-        print errors
+        print(errors)
         sys.exit(1)
     else:
         sys.exit(0)

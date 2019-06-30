@@ -3,8 +3,8 @@ class TemplatePlotGroupPanel
 Panel for displaying preference maps and activity plot groups.
 """
 
-from Tkinter import DISABLED, NORMAL
-from tkFileDialog import asksaveasfilename
+from tkinter import DISABLED, NORMAL
+from tkinter.filedialog import asksaveasfilename
 
 from param import normalize_path
 import paramtk as tk
@@ -13,7 +13,7 @@ import topo.command.pylabplot
 from topo.plotting.plotgroup import TemplatePlotGroup
 from topo.base.sheet import Sheet
 
-from plotgrouppanel import SheetPanel
+from .plotgrouppanel import SheetPanel
 
 
 ### CEBALERT: additional dynamic info/right-click problems:
@@ -33,7 +33,7 @@ def available_plot_channels(plot):
     Return the channels+names of the channels that have views.
     """
     available_channels = {}
-    for name,channel in plot.channels.items():
+    for name,channel in list(plot.channels.items()):
         if channel in plot.view_dict[name]:
             available_channels[name]=channel
     return available_channels
@@ -187,9 +187,9 @@ class TemplatePlotGroupPanel(SheetPanel):
     def __print_matrix(self,channel):
         plot = self._right_click_info['plot']
         description = "%s %s at time %s" % (plot.plot_src_name, plot.name, topo.sim.timestr())
-        print ("#" + description)
+        print(("#" + description))
         m=plot._get_matrix(channel)
-        print m
+        print(m)
 
     def __plot_matrix(self,channel):
         plot = self._right_click_info['plot']
@@ -219,14 +219,14 @@ class TemplatePlotGroupPanel(SheetPanel):
 
         channels_info = ""
         if channel is None:
-            for channel,name in available_plot_channels(plot).items():
+            for channel,name in list(available_plot_channels(plot).items()):
                 m=plot._get_matrix(channel)
                 channels_info+="%s:%f"%(name,m[r,c])
         else:
             m=plot._get_matrix(channel)
             channels_info+="%s:%f"%(plot.channels[channel],m[r,c])
 
-        print "%s %s" % (description, channels_info)
+        print("%s %s" % (description, channels_info))
 
 
     def _dynamic_info_string(self,event_info,basic_text):
@@ -238,7 +238,7 @@ class TemplatePlotGroupPanel(SheetPanel):
 
         info_string = basic_text
 
-        for channel,channel_name in available_plot_channels(plot).items():
+        for channel,channel_name in list(available_plot_channels(plot).items()):
             info_string+=" %s: % 1.3f"%(channel_name,plot._get_sv(channel)[r,c])
 
         return info_string
@@ -261,7 +261,7 @@ class SheetPanel(TemplatePlotGroupPanel):
 
 
     def change_color_channel(self):
-        for pt in self.plotgroup.plot_templates.values():
+        for pt in list(self.plotgroup.plot_templates.values()):
             prefix = self.plotgroup.color_channel
             if prefix is None:
                 pt.pop("Hue", None)
@@ -273,10 +273,10 @@ class SheetPanel(TemplatePlotGroupPanel):
 
 
     def populate_color_channel_param(self):
-        sheets = [s for s in topo.sim.objects(self.sheet_type).values()]
+        sheets = [s for s in list(topo.sim.objects(self.sheet_type).values())]
         channels = ['None']
         for sheet in sheets:
-            paths = [k[0] if isinstance(k, tuple) else k for k in sheet.views.Maps.keys()]
+            paths = [k[0] if isinstance(k, tuple) else k for k in list(sheet.views.Maps.keys())]
             channels += [k.replace('Preference','') for k in paths
                          if not k.startswith('_') and 'Preference' in k]
         self.plotgroup.params()['color_channel'].objects = channels

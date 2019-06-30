@@ -25,7 +25,7 @@ from sys import argv
 
 script = "lissom_oo_or.ty"
 
-alphabet = map(chr,range(65,91))
+alphabet = list(map(chr,list(range(65,91))))
 
 # leave time as None to have it be looked up.
 # Note that you have to specify a version for which timing data
@@ -81,7 +81,7 @@ svnversion_timings = _get_svnversion_timings()
 def _keys_and_points(annotations):
     points = sorted(annotations)
     keys = alphabet[0:len(points)]
-    return zip(keys,points)
+    return list(zip(keys,points))
 
 # CB: in progress - obviously the page construction should
 # be separated out, etc
@@ -330,7 +330,7 @@ def plott(t,tytle,filename):
     builds=[]
     versions=[]
     times=[]
-    for build,data in t.items():
+    for build,data in list(t.items()):
         if data is not None:
             builds.append(build)
             versions.append(data[1])

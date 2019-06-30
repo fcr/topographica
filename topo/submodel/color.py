@@ -70,8 +70,8 @@ class ColorEarlyVisionModel(EarlyVisionModel):
     def property_setup(self, properties):
         properties = super(ColorEarlyVisionModel, self).property_setup(properties)
 
-        properties['SF']=range(1,self.sf_channels+1) if 'sf' in self.dims and 'cr' not in self.dims else \
-                         range(2,self.sf_channels+1) if 'sf' in self.dims and 'cr' in self.dims else [1]
+        properties['SF']=list(range(1,self.sf_channels+1)) if 'sf' in self.dims and 'cr' not in self.dims else \
+                         list(range(2,self.sf_channels+1)) if 'sf' in self.dims and 'cr' in self.dims else [1]
         properties['SFs'] = (lancet.List('SF', properties['SF'])
                              if max(properties['SF'])>1 else lancet.Identity())
 
@@ -185,7 +185,7 @@ class ColorEarlyVisionModel(EarlyVisionModel):
     @Model.SharedWeightCFProjection
     def afferent_center(self, src_properties, dest_properties):
         opponents=[]
-        for color, color_code in self.ColorToChannel.items():
+        for color, color_code in list(self.ColorToChannel.items()):
             if color in dest_properties['opponent']:
                 opponents.append(color_code)
 
@@ -212,7 +212,7 @@ class ColorEarlyVisionModel(EarlyVisionModel):
     @Model.SharedWeightCFProjection
     def afferent_surround(self, src_properties, dest_properties):
         surrounds=[]
-        for color, color_code in self.ColorToChannel.items():
+        for color, color_code in list(self.ColorToChannel.items()):
             if color in dest_properties['surround']:
                 surrounds.append(color_code)
 

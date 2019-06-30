@@ -12,10 +12,10 @@ import copy
 import sys
 import re
 import webbrowser
-from Tkinter import Frame, Button, \
+from tkinter import Frame, Button, \
      LEFT, YES, Label, DISABLED, \
      NORMAL, DoubleVar
-from tkFileDialog import asksaveasfilename,askopenfilename
+from tkinter.filedialog import asksaveasfilename,askopenfilename
 
 import __main__
 import param
@@ -28,11 +28,11 @@ from topo.misc.commandline import sim_name_from_filename
 import topo.misc.genexamples
 import topo.command
 import topo.tkgui
-from templateplotgrouppanel import TemplatePlotGroupPanel
-from featurecurvepanel import FeatureCurvePanel
-from projectionpanel import SheetPanel,CFProjectionPanel,ProjectionActivityPanel,ConnectionFieldsPanel,RFProjectionPanel
-from testpattern import TestPattern
-from editor import ModelEditor
+from .templateplotgrouppanel import TemplatePlotGroupPanel
+from .featurecurvepanel import FeatureCurvePanel
+from .projectionpanel import SheetPanel,CFProjectionPanel,ProjectionActivityPanel,ConnectionFieldsPanel,RFProjectionPanel
+from .testpattern import TestPattern
+from .editor import ModelEditor
 
 
 tk.AppWindow.window_icon_path = resolve_path('tkgui/icons/topo.xbm')
@@ -233,7 +233,7 @@ except ImportError:
 # find an example of tkinter software displaying a gui exception on
 # the originating window.)
 def _tkinter_report_exception(widget):
-    exc, val = sys.exc_type, sys.exc_value
+    exc, val = sys.exc_info()[0], sys.exc_info()[1]
     msg = "(%s) %s"%(exc.__name__,val)
     # If the supplied widget has no master, it's probably the Tk
     # instance. In that case, resort to the 'last-one-set' hack (see
@@ -271,7 +271,7 @@ def _tkinter_report_exception(widget):
     traceback.print_exc()
 
 
-import Tkinter
+import tkinter
 
 class TopoConsole(tk.AppWindow,tk.TkParameterized):
     """
@@ -294,7 +294,7 @@ class TopoConsole(tk.AppWindow,tk.TkParameterized):
         # Instead of displaying tracebacks on the commandline, try to display
         # them on the originating window.
         # CEBALERT: on destroy(), ought to revert this
-        Tkinter.Misc._report_exception=_tkinter_report_exception
+        tkinter.Misc._report_exception=_tkinter_report_exception
 
         self.exit_on_quit = exit_on_quit
         self.auto_refresh_panels = []
@@ -455,7 +455,7 @@ class TopoConsole(tk.AppWindow,tk.TkParameterized):
         # create menu entries, and get list of categories
         entries=OrderedDict() # keep the order of plotgroup_templates (which is also KL)
         categories = []
-        for label,plotgroup in plotgroups.items():
+        for label,plotgroup in list(plotgroups.items()):
             entries[label] = PlotsMenuEntry(plotgroup)
             categories.append(plotgroup.category)
         categories = sorted(set(categories))
@@ -463,7 +463,7 @@ class TopoConsole(tk.AppWindow,tk.TkParameterized):
 
         # The Basic category items appear on the menu itself.
         assert 'Basic' in categories, "'Basic' is the category for the standard Plots menu entries."
-        for label,entry in entries.items():
+        for label,entry in list(entries.items()):
             if entry.plotgroup.category=='Basic':
                     plots_menu.add_command(label=label,command=entry.__call__)
 
@@ -478,7 +478,7 @@ class TopoConsole(tk.AppWindow,tk.TkParameterized):
             plots_menu.add_cascade(label=category,menu=category_menu)
 
             # could probably search more efficiently than this
-            for label,entry in entries.items():
+            for label,entry in list(entries.items()):
                 if entry.plotgroup.category==category:
                     category_menu.add_command(label=label,command=entry.__call__)
 
@@ -566,7 +566,7 @@ class TopoConsole(tk.AppWindow,tk.TkParameterized):
         if script in ('',(),None): # (representing the various ways no script was selected in the dialog)
             self.messageBar.response('Run canceled')
         else:
-            execfile(script,__main__.__dict__)
+            exec(compile(open(script, "rb").read(), script, 'exec'),__main__.__dict__)
             self.messageBar.response('Ran ' + script)
             sim_name_from_filename(script)
             self.title(topo.sim.name)
@@ -581,7 +581,7 @@ class TopoConsole(tk.AppWindow,tk.TkParameterized):
         if script in ('',(),None): # (representing the various ways no script was selected in the dialog)
             self.messageBar.response('No example opened')
         else:
-            execfile(script,__main__.__dict__)
+            exec(compile(open(script, "rb").read(), script, 'exec'),__main__.__dict__)
             self.messageBar.response('Ran ' + script)
             sim_name_from_filename(script)
             self.title(topo.sim.name)

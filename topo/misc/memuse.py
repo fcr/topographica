@@ -95,7 +95,7 @@ def allsizes_mb():
 def default_memuse_analysis_fn(prefix=""):
     """Basic memuse function for use with memuse_batch()"""
     import topo
-    print "%st%s: %s" % (prefix,topo.sim.timestr(),allsizes_mb())
+    print("%st%s: %s" % (prefix,topo.sim.timestr(),allsizes_mb()))
 
 
 
@@ -105,13 +105,13 @@ def plotting_and_saving_analysis_fn(prefix=""):
     from topo.command import save_snapshot
     from topo.command.analysis import measure_sine_pref,save_plotgroup
 
-    print "%sMemuse at time %s: %s" % (prefix,topo.sim.timestr(),allsizes_mb())
+    print("%sMemuse at time %s: %s" % (prefix,topo.sim.timestr(),allsizes_mb()))
     measure_sine_pref()
-    print "%sAfter measure_sine_pref:  %s" % (prefix,allsizes_mb())
+    print("%sAfter measure_sine_pref:  %s" % (prefix,allsizes_mb()))
     save_plotgroup("Orientation Preference")
-    print "%sAfter save_plotgroup:     %s" % (prefix,allsizes_mb())
+    print("%sAfter save_plotgroup:     %s" % (prefix,allsizes_mb()))
     save_snapshot("/tmp/tmp.typ")
-    print "%sAfter save_snapshot:      %s" % (prefix,allsizes_mb())
+    print("%sAfter save_snapshot:      %s" % (prefix,allsizes_mb()))
 
 
 
@@ -136,7 +136,7 @@ def memuse_batch(script_file,times=[0],analysis_fn=default_memuse_analysis_fn,**
     simname = prefix
 
     # Construct parameter-value portion of filename; should do more filtering
-    for a,val in params.iteritems():
+    for a,val in params.items():
         # Special case to give reasonable filenames for lists
         valstr= ("_".join([str(i) for i in val]) if isinstance(val,list)
                  else str(val))
@@ -147,7 +147,7 @@ def memuse_batch(script_file,times=[0],analysis_fn=default_memuse_analysis_fn,**
 
     # Run script in main
     try:
-        execfile(script_file,__main__.__dict__) #global_params.context
+        exec(compile(open(script_file, "rb").read(), script_file, 'exec'),__main__.__dict__) #global_params.context
         global_params.check_for_unused_names()
         topo.sim.name=simname
 

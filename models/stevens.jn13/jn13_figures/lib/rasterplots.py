@@ -77,7 +77,7 @@ def cf_image(cfs, coords, width=None, height=None, pos=(0,0),
     cf_im = lambda cf, size: greyscale(normalize(cf)).resize((size,size), 
                                                              Image.NEAREST)
     (posx, posy) = pos
-    (d1,d2) = zip(*coords)
+    (d1,d2) = list(zip(*coords))
     density = len(set(d1))
     assert density == len(set(d2)), "Not implemented for non-square sets"
     height = density if height is None else height

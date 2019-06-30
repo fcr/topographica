@@ -198,7 +198,7 @@ class FaceTracker(PtzTracker):
             return None
 
         for f in self.faces:
-            print "face detected: %s" %f
+            print("face detected: %s" %f)
             #row and column are inverted in Opencv
             self.pos=(f.y,f.x)
             self.coormin_bbox=(self.pos[0],self.pos[1])

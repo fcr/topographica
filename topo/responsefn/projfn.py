@@ -26,8 +26,8 @@ class CFPRF_EuclideanDistance(CFPResponseFn):
         cfs = iterator.flatcfs
         rows,cols = activity.shape
         euclidean_dist_mat = np.zeros((rows,cols), np.float)
-        for r in xrange(rows):
-            for c in xrange(cols):
+        for r in range(rows):
+            for c in range(cols):
                 flati = r*cols+c
                 cf = cfs[flati]
                 r1,r2,c1,c2 = cf.input_sheet_slice

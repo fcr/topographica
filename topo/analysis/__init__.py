@@ -25,7 +25,7 @@ from topo.base.sheetview import CFView
 from topo.misc.ipython import RunProgress
 from topo.misc import color
 
-from command import measure_cog
+from .command import measure_cog
 
 
 
@@ -127,7 +127,7 @@ class SimRef(Reference):
     def __init__(self, obj=None, array_ref=None):
 
         if topo.sim.model is not None:
-            print "DEPRECATION WARNING: use topo.submodel.specifications instead of SimRef."
+            print("DEPRECATION WARNING: use topo.submodel.specifications instead of SimRef.")
 
         if [obj, array_ref] == [None,None]:
             raise Exception("Please specify an object, a path string or an array_ref.")
@@ -242,5 +242,5 @@ imagen.colorspaces.hsv_to_rgb = color._hsv_to_rgb_array_opt
 # Automatically discover all .py files in this directory.
 import os,fnmatch
 __all__ = [f.split('.py')[0] for f in os.listdir(__path__[0]) if fnmatch.fnmatch(f,'[!._]*.py')]
-del f,os,fnmatch
+del os,fnmatch
 
