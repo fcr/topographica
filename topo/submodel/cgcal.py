@@ -340,7 +340,7 @@ class VonMisesORCoordinator(FeatureCoordinator):
 #===========================#
 
 
-from gmpy2 import mpq
+from gmpy import mpq
 
 class distort(object):
 

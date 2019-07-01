@@ -147,8 +147,8 @@ _numpy_ufunc_pickle_support()
 
 
 def _mpq_pickle_support():
-    """Allow instances of gmpy2.mpq to pickle."""
-    from gmpy2 import mpq
+    """Allow instances of gmpy.mpq to pickle."""
+    from gmpy import mpq
     mpq_type = type(mpq(1,10)) # gmpy doesn't appear to expose the type another way
     import copyreg
     copyreg.pickle(mpq_type,lambda q: (mpq,(q.digits(),)))
@@ -183,7 +183,7 @@ def fixedpoint_time_type(x, precision=4):
     return fixedpoint.FixedPoint(x, precision)
 
 try:
-    import gmpy2 as gmpy
+    import gmpy
     _time_type = gmpy.mpq
     _mpq_pickle_support()
 except ImportError:

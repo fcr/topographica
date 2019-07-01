@@ -122,7 +122,7 @@ class TestPattern(SheetPanel):
         # CEB: 'new_default=True' is temporary so that the current
         # behavior is the same as before; shoudl make None the
         # default and mean 'apply to all sheets'.
-        self.pack_param('edit_sheet',parent=self.pg_control_pane,on_modify=self.switch_sheet,widget_options={'new_default':True,'sort_fn_args':{'cmp':lambda x, y: cmp(-x.precedence,-y.precedence)}})
+        self.pack_param('edit_sheet',parent=self.pg_control_pane,on_modify=self.switch_sheet,widget_options={'new_default':True,'sort_fn_args':{'cmp':lambda x, y: ((-x.precedence > -y.precedence) - (-x.precedence < -y.precedence))}})
         self.pack_param('pattern_generator',parent=self.pg_control_pane,
                         on_modify=self.change_pattern_generator,side="top")
 

@@ -406,7 +406,7 @@ class Event(object):
         """
         raise NotImplementedError
 
-    def __cmp__(self,ev):
+    def __eq__(self,ev):
         """
         Implements event comparison by time, allowing sorting,
         and queue maintenance  using bisect module or minheap
@@ -415,12 +415,62 @@ class Event(object):
         NOTE: identity comparisons should always be done using the
         'is' operator, not '=='.
         """
-        if self.time > ev.time:
-            return 1
-        elif self.time < ev.time:
-            return -1
-        else:
-            return 0
+        return self.time == ev.time
+
+    def __ne__(self,ev):
+        """
+        Implements event comparison by time, allowing sorting,
+        and queue maintenance  using bisect module or minheap
+        implementations, if needed.
+
+        NOTE: identity comparisons should always be done using the
+        'is' operator, not '=='.
+        """
+        return self.time != ev.time
+
+    def __lt__(self,ev):
+        """
+        Implements event comparison by time, allowing sorting,
+        and queue maintenance  using bisect module or minheap
+        implementations, if needed.
+
+        NOTE: identity comparisons should always be done using the
+        'is' operator, not '=='.
+        """
+        return self.time < ev.time
+
+    def __le__(self,ev):
+        """
+        Implements event comparison by time, allowing sorting,
+        and queue maintenance  using bisect module or minheap
+        implementations, if needed.
+
+        NOTE: identity comparisons should always be done using the
+        'is' operator, not '=='.
+        """
+        return self.time <= ev.time
+
+    def __gt__(self,ev):
+        """
+        Implements event comparison by time, allowing sorting,
+        and queue maintenance  using bisect module or minheap
+        implementations, if needed.
+
+        NOTE: identity comparisons should always be done using the
+        'is' operator, not '=='.
+        """
+        return self.time > ev.time
+
+    def __ge__(self,ev):
+        """
+        Implements event comparison by time, allowing sorting,
+        and queue maintenance  using bisect module or minheap
+        implementations, if needed.
+
+        NOTE: identity comparisons should always be done using the
+        'is' operator, not '=='.
+        """
+        return self.time >= ev.time
 
 
 class EPConnectionEvent(Event):
@@ -1537,19 +1587,19 @@ class Simulation(param.Parameterized,OptionalSingleton):
         included, because executed commands are not kept around.
         """
         objs  = [o.script_repr(imports=imports) for o in
-                 sorted(list(self.objects().values()), cmp=lambda x, y: cmp(x.name,y.name))]
+                 sorted(list(self.objects().values()), key=lambda x: x.name)]
 
         # CBENHANCEMENT: could allow user to plug in a sorting
         # function.  E.g. might want to compare conns based on name
         # then dest then src if lots of conns share the same name (so
         # the order is always the same).
         conns = [o.script_repr(imports=imports) for o in
-                 sorted(self.connections(),      cmp=lambda x, y: cmp(x.name,y.name))]
+                 sorted(self.connections(), key=lambda x: x.name)]
 
         cmds  = [o.script_repr(imports=imports) for o in
                  sorted(sorted([e for e in self.events if isinstance(e,CommandEvent)],
-                               cmp=lambda x, y: cmp(x.command_string,y.command_string)),
-                        cmp=lambda x, y: cmp(x.time,y.time))]
+                               key=lambda x: x.command_string),
+                        key=lambda x: x.time)]
 
         # CEBALERT: hack to support importing the time type since the
         # scheduled actions will have times printed using the

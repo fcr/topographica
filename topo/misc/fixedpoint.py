@@ -128,9 +128,9 @@ def bankersRounding(self, dividend, divisor, quotient, remainder):
          the remainder is more than half of the divisor
       or the remainder is exactly half the divisor and the quotient is odd
     """
-    c = cmp(remainder << 1, divisor)
+    r = remainder << 1
     # c < 0 <-> remainder < divisor/2, etc
-    if c > 0 or (c == 0 and (quotient & 1) == 1):
+    if r > divisor or (r == divisor and (quotient & 1) == 1):
         quotient += 1
     return quotient
 
@@ -141,9 +141,9 @@ def addHalfAndChop(self, dividend, divisor, quotient, remainder):
          the remainder is greater than half of the divisor
       or the remainder is exactly half the divisor and the quotient is >= 0
     """
-    c = cmp(remainder << 1, divisor)
+    r = remainder << 1
     # c < 0 <-> remainder < divisor/2, etc
-    if c > 0 or (c == 0 and quotient >= 0):
+    if r > divisor or (r == divisor and quotient >= 0):
         quotient += 1
     return quotient
 
@@ -334,9 +334,29 @@ class FixedPoint(object):
         pass
 
 
-    def __cmp__(self, other):
-        xn, yn, p = _norm(self, other, FixedPoint=type(self))
-        return cmp(xn, yn)
+    def __eq__(self, other):
+        xn, yn, _ = _norm(self, other, FixedPoint=type(self))
+        return xn == yn
+
+    def __ne__(self, other):
+        xn, yn, _ = _norm(self, other, FixedPoint=type(self))
+        return xn != yn
+
+    def __lt__(self, other):
+        xn, yn, _ = _norm(self, other, FixedPoint=type(self))
+        return xn < yn
+
+    def __le__(self, other):
+        xn, yn, _ = _norm(self, other, FixedPoint=type(self))
+        return xn <= yn
+
+    def __gt__(self, other):
+        xn, yn, _ = _norm(self, other, FixedPoint=type(self))
+        return xn > yn
+
+    def __ge__(self, other):
+        xn, yn, _ = _norm(self, other, FixedPoint=type(self))
+        return xn >= yn
 
     def __hash__(self):
         """ Caution!  == values must have equal hashes, and a FixedPoint

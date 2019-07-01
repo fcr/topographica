@@ -69,9 +69,7 @@ def check_all_weights():
 def check_all_activities():
     print("t=%s: Checking activities..."%topo.sim.time())
 
-    sheets = sorted(list(topo.sim.objects().values()), cmp=lambda x, y:
-                    cmp(x.precedence,
-                        y.precedence))
+    sheets = sorted(list(topo.sim.objects().values()), key=lambda x: x.precedence)
     errs = ""
     for s in sheets:
         print("...%s"%s.name)

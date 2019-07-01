@@ -428,7 +428,7 @@ class mpq(object):
 class gmpyImporter(ModuleImporter):
 
     def find_module(self, fullname, path=None):
-        if fullname == 'gmpy2' or fullname.startswith('gmpy2.'):
+        if fullname == 'gmpy' or fullname.startswith('gmpy.'):
             import param
             param.Parameterized().warning('Module "gmpy" is not available. gmpy.mpq is provided by using fixedpoint.FixedPoint.')
             g = gmpyFaker()

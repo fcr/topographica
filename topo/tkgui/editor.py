@@ -735,7 +735,7 @@ class ArrowTool(Frame):
 # hack to sort by precedence
 # (won't need when modeleditor is plotgroup)
 def names_sorted_by_precedence(classes):
-    classes.sort(lambda x, y: cmp(-x.precedence,-y.precedence))
+    classes.sort(lambda x, y: ((-x.precedence > -y.precedence) - (-x.precedence < -y.precedence)))
     return [class_.__name__ for class_ in classes]
 
 

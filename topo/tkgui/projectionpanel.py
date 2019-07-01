@@ -26,9 +26,9 @@ def cmp_projections(p1,p2):
     It compares the precedence number first and then the src_name and name attributes.
     """
     if p1.src.precedence != p2.src.precedence:
-        return cmp(p1.src.precedence,p2.src.precedence)
+        return (p1.src.precedence > p2.src.precedence) - (p1.src.precedence < p2.src.precedence)
     else:
-        return cmp(p1,p2)
+        return (p1 > p2) - (p1 < p2)
 
 
 UNIT_PADDING = 1
@@ -66,7 +66,7 @@ class ProjectionSheetPanel(SheetPanel):
         self.pack_param('sheet',parent=self.control_frame_3,
             on_modify=self.sheet_change,side='left',expand=1,
             widget_options={'new_default':True,
-                            'sort_fn_args':{'cmp':lambda x, y: cmp(-x.precedence,-y.precedence)}})
+                            'sort_fn_args':{'cmp':lambda x, y: ((-x.precedence > -y.precedence) - (-x.precedence < -y.precedence))}})
 
 
     def setup_plotgroup(self):

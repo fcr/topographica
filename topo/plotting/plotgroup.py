@@ -52,10 +52,11 @@ def _cmp_plot(plot1,plot2):
     It compares the precedence number first and then the src_name and name attributes.
     """
     if plot1.precedence != plot2.precedence:
-        return cmp(plot1.precedence,plot2.precedence)
+        return (plot1.precedence > plot2.precedence) - (plot1.precedence < plot2.precedence)
     else:
-        return cmp((plot1.plot_src_name+plot1.name),
-                   (plot2.plot_src_name+plot2.name))
+        a = plot1.plot_src_name + plot1.name
+        b = plot2.plot_src_name + plot2.name
+        return (a > b) - (a < b)
 
 
 class PlotGroup(param.Parameterized):

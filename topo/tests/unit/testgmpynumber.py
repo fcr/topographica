@@ -6,7 +6,7 @@ import param
 
 from nose.plugins.skip import SkipTest
 try:
-    import gmpy2 as gmpy
+    import gmpy
 except ImportError:
     raise SkipTest("No gmpy module: testgmpynumber.txt skipped") 
 
