@@ -92,7 +92,7 @@ def schedule_events(sheet_str="topo.sim['V1']",st=0.5,aff_name="Afferent",
 
     # Afferent learning rate changes (for every Projection named Afferent)
     sheet_=eval(sheet_str)
-    projs = [pn for pn in list(sheet_.projections().keys()) if pn.count(aff_name)]
+    projs = [pn for pn in sheet_.projections().keys() if pn.count(aff_name)]
     num_aff=len(projs)
     arss="" if ars==1.0 else "*%3.1f"%ars
     for pn in projs:

@@ -262,9 +262,9 @@ def run_tests():
     if p.targets==['quick']:
         targets = ['batch','pickle','scriptrepr']
     elif p.targets==['exhaustive']:
-        targets = list(target.keys())
+        targets = target.keys()
     elif p.targets==['speed']:
-        targets = list(speedtarget.keys())
+        targets = speedtarget.keys()
     else:
         targets = p.targets
         

@@ -104,7 +104,7 @@ class SnapshotSupport(object):
         global external_patches
 
         # not ordered
-        for message in list(external_patches.keys()):
+        for message in external_patches.keys():
             #param.Parameterized().message(message)
             external_patches[message]()
 
@@ -133,7 +133,7 @@ def _version_greater_or_equal(module,than):
     return version>=than
 
 def _setstate(inst,state):
-    for k,v in list(state.items()):
+    for k,v in state.items():
         setattr(inst,k,v)
 
 def preprocess_state(class_,state_mod_fn):
@@ -417,7 +417,7 @@ def removed_JointScaling():
     
         def do_joint_scaling(self):
             joint_total = zeros(self.shape, activity_type)
-            for key,projlist in list(self._grouped_in_projections('JointNormalize').items()):
+            for key,projlist in self._grouped_in_projections('JointNormalize').items():
                 if key is not None:
                     if key =='Afferent':
                         for proj in projlist:
@@ -518,7 +518,7 @@ def replace_keyedlist():
             return True
         def has_key(self, key): return key in list(self.keys())
         def __setitem__(self,k,v): return self.set(k,v)
-        def append(self, xxx_todo_changeme): (key, value) = xxx_todo_changeme; super(KeyedList,self).append(tuple((key,value)))
+        def append(self, key_value): (key, value) = key_value; super(KeyedList,self).append(tuple((key,value)))
         def items(self): return list(self)
         def keys(self): return [k for (k, v) in list(self.items())]
         def values(self): return [v for (k, v) in list(self.items())]

@@ -670,7 +670,7 @@ class ProjectionSheet(Sheet):
         Subclasses Sheet state_push to also push projection activities.
         """
         super(ProjectionSheet, self).state_push()
-        for p in list(self.projections().values()): p.state_push()
+        for p in self.projections().values(): p.state_push()
 
 
     def state_pop(self):
@@ -678,7 +678,7 @@ class ProjectionSheet(Sheet):
         Subclasses Sheet state_pop to also pop projection activities.
         """
         super(ProjectionSheet, self).state_pop()
-        for p in list(self.projections().values()): p.state_pop()
+        for p in self.projections().values(): p.state_pop()
 
 
     def n_bytes(self):

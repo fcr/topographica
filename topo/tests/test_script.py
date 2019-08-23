@@ -77,7 +77,7 @@ def _instantiate_everything(
     def get_classes(module,classes,processed_modules,module_excludes=()):
         exec("from %s import *"%module.__name__, locals())
         dict_ = module.__dict__
-        for (k,v) in list(dict_.items()):
+        for (k,v) in dict_.items():
             if '__all__' in dict_ and inspect.ismodule(v) and k not in module_excludes:
                 if k in dict_['__all__'] and v not in processed_modules:
                     get_classes(v,classes,processed_modules,module_excludes)

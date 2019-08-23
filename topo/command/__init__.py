@@ -174,15 +174,13 @@ def save_input_generators():
     # ensure EPs get started (if save_input_generators is called before the simulation is run())
     topo.sim.run(0.0)
 
-    generator_sheets = list(topo.sim.objects(GeneratorSheet).values())
-    for sheet in generator_sheets:
+    for sheet in topo.sim.objects(GeneratorSheet).values():
         sheet.push_input_generator()
 
 
 def restore_input_generators():
     """Restore previously saved input_generators for all of topo.sim's GeneratorSheets."""
-    generator_sheets = list(topo.sim.objects(GeneratorSheet).values())
-    for sheet in generator_sheets:
+    for sheet in topo.sim.objects(GeneratorSheet).values():
         sheet.pop_input_generator()
 
 
@@ -936,7 +934,7 @@ def n_bytes():
     This estimate is a lower bound only, based primarily on memory for
     the matrices used for activity and connections.
     """
-    return sum([s.n_bytes() for s in list(topo.sim.objects(Sheet).values())])
+    return sum([s.n_bytes() for s in topo.sim.objects(Sheet).values()])
 
 
 
@@ -944,7 +942,7 @@ def n_conns():
     """
     Count the number of connections in all ProjectionSheets in the current Simulation.
     """
-    return sum([s.n_conns() for s in list(topo.sim.objects(ProjectionSheet).values())])
+    return sum([s.n_conns() for s in topo.sim.objects(ProjectionSheet).values()])
 
 
 def print_sizes():

@@ -227,7 +227,8 @@ class ChannelGeneratorSheet(GeneratorSheet):
             self.warning("Pattern generator {0} returned None."
             "Unable to generate Activity pattern.".format(self.input_generator.name))
         else:
-            self.activity[:] = list(channels_dict.items())[0][1]
+            channels_list = list(channels_dict.items())
+            self.activity[:] = channels_list[0][1]
 
             if self.apply_output_fns:
                 for of in self.output_fns:
@@ -239,7 +240,7 @@ class ChannelGeneratorSheet(GeneratorSheet):
             ## These loops are safe: if the pattern doesn't provide
             ## further channels, self._channel_data = []
             for i in range(len(self._channel_data)):
-                self._channel_data[i][:] = list(channels_dict.items())[i+1][1]
+                self._channel_data[i][:] = channels_list[i+1][1]
 
 
             if self.apply_output_fns:

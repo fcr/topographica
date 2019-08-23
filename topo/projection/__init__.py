@@ -390,7 +390,7 @@ class OneToOneProjection(Projection):
                self.activity.nbytes
 
 
-_public = list(set([_k for _k,_v in list(locals().items())
+_public = list(set([_k for _k,_v in locals().items()
                     if isinstance(_v,type) and issubclass(_v,Projection)]))
 _public += [
     "CFPOF_SharedWeight",

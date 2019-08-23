@@ -40,7 +40,7 @@ class Composer(Sheet):
         if not port in self.ports:
             self.ports[port] = {}
 
-        for k,v in list(config.items()):
+        for k,v in config.items():
             self.ports[port][k] = v
 
     def _dest_connect(self,proj,origin=(0,0)):

@@ -157,9 +157,9 @@ class TestSimulation(unittest.TestCase):
         s.connect('pulse1','sum_unit',delay=1)
         s.connect('pulse2','sum_unit',delay=1)
         t1 = s.objects()
-        e1 = [ep for ep in list(t1.values()) if isinstance(ep,PulseGenerator) and ep.name == n1]
+        e1 = [ep for ep in t1.values() if isinstance(ep,PulseGenerator) and ep.name == n1]
         t2 = s.objects()
-        e2 = [ep for ep in list(t2.values()) if isinstance(ep,PulseGenerator) and ep.name == n2]
+        e2 = [ep for ep in t2.values() if isinstance(ep,PulseGenerator) and ep.name == n2]
         assert e1.pop().name == n1, 'Object names do not match'
         assert e2.pop().name == n2, 'Object names do not match'
 

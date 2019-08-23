@@ -330,7 +330,7 @@ def plott(t,tytle,filename):
     builds=[]
     versions=[]
     times=[]
-    for build,data in list(t.items()):
+    for build,data in t.items():
         if data is not None:
             builds.append(build)
             versions.append(data[1])

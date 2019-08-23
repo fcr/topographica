@@ -77,14 +77,14 @@ class PicklableClassAttributes(object):
         to_restore = {}
 
         ########## pre-processing (renames, moves, etc)
-        for class_path,state in list(state['class_attributes'].items()):
+        for class_path,state in state['class_attributes'].items():
             # from e.g. "topo.base.parameter.Parameter", we want "topo.base.parameter"
 
             if class_path in self.do_not_restore:
                 #print "Did not restore:",class_path
                 break
 
-            for p_name,p_obj in list(state.items()):
+            for p_name,p_obj in state.items():
                 if p_name in self.param_moves.get(class_path,{}):
                     assert p_name not in self.param_name_changes.get(class_path,{})
 
@@ -140,7 +140,7 @@ class PicklableClassAttributes(object):
                 Parameterized().warning("Could not find class '%s' to restore its parameter values (class might have been removed or renamed; if you are using this class, please file a support request via topographica.org)."%class_path)
                 break
 
-            for p_name,p_obj in list(to_restore[class_path].items()):
+            for p_name,p_obj in to_restore[class_path].items():
                 try:
                     if p_name in deleted_params:
                         pass
@@ -175,7 +175,7 @@ class PicklableClassAttributes(object):
         Modules can be specifically excluded if listed in exclude.
         """
         dict_ = module.__dict__
-        for (k,v) in list(dict_.items()):
+        for (k,v) in dict_.items():
             if '__all__' in dict_ and inspect.ismodule(v) and k not in exclude:
                 if k in dict_['__all__'] and v not in processed_modules:
                     self.get_PO_class_attributes(v,class_attributes,processed_modules,exclude)
@@ -195,7 +195,7 @@ class PicklableClassAttributes(object):
                     class_attributes[full_class_path] = {}
                     # Parameterized classes always have parameters in
                     # __dict__, never in __slots__
-                    for (name,obj) in list(v.__dict__.items()):
+                    for (name,obj) in v.__dict__.items():
                         if isinstance(obj,Parameter) and obj.pickle_default_value:
                             class_attributes[full_class_path][name] = obj
 

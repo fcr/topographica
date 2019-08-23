@@ -59,7 +59,7 @@ def update_rgb_activities():
     """
     Make available Red, Green, and Blue activity matrices for all appropriate sheets.
     """
-    for sheet in list(topo.sim.objects(Sheet).values()):
+    for sheet in topo.sim.objects(Sheet).values():
         metadata = AttrDict(src_name=sheet.name, precedence=sheet.precedence,
                             row_precedence=sheet.row_precedence,
                             timestamp=topo.sim.time())
@@ -152,7 +152,7 @@ class measure_cog(ParameterizedFunction):
     def __call__(self, **params):
         p = ParamOverrides(self, params)
 
-        measured_sheets = [s for s in list(topo.sim.objects(CFSheet).values())
+        measured_sheets = [s for s in topo.sim.objects(CFSheet).values()
                            if hasattr(s,'measure_maps') and s.measure_maps]
 
         results = Layout()
@@ -168,7 +168,7 @@ class measure_cog(ParameterizedFunction):
                 if (proj.name == requested_proj) or \
                    (requested_proj == '' and (proj.src != sheet)):
                     cog_data = self._update_proj_cog(p, proj)
-                    for key, data in list(cog_data.items()):
+                    for key, data in cog_data.items():
                         name = proj.name[0].upper() + proj.name[1:]
                         results.set_path((key, name), data)
 

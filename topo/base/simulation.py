@@ -1026,7 +1026,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
             self.eps_to_start[:]=[]
 
         if hasattr(self,'_event_processors'):
-            for name,EP in list(self._event_processors.items()):
+            for name,EP in self._event_processors.items():
                 for c in EP.in_connections:
                     if hasattr(c,'_cleanup'):
                         c._cleanup()
@@ -1146,7 +1146,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         if not isinstance(ep,EventProcessor):
             raise TypeError("Expected EventProcessor: objects in the Simulation must be EPs.")
 
-        if ep in list(self._event_processors.values()):
+        if ep in self._event_processors.values():
             self.warning("EventProcessor "+str(ep)+" () already exists in the simulation and will not be added.")
         else:
             ep.initialized=False
@@ -1384,7 +1384,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
                 if did_event:
                     did_event = False
                     #self.debug("Time to sleep; next event time: %s",self.timestr(self.events[0].time))
-                    for ep in list(self._event_processors.values()):
+                    for ep in self._event_processors.values():
                         ep.process_current_time()
 
                 # Set the time to the frontmost event.  Bear in mind
@@ -1464,7 +1464,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         if self.eps_to_start != []:
             self.run(0.0)
         self.event_push()
-        for ep in list(self._event_processors.values()):
+        for ep in self._event_processors.values():
             ep.state_push()
 
         param.Parameterized.state_push(self)
@@ -1477,7 +1477,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         See state_push() for more details.
         """
         self.event_pop()
-        for ep in list(self._event_processors.values()):
+        for ep in self._event_processors.values():
             ep.state_pop()
 
         param.Parameterized.state_pop(self)
@@ -1559,7 +1559,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         s.objects().keys() to see a list of the names of all objects.
         """
         return dict([(ep_name,ep)
-                     for (ep_name,ep) in list(self._event_processors.items())
+                     for (ep_name,ep) in self._event_processors.items()
                      if isinstance(ep,baseclass)])
 
 
@@ -1568,7 +1568,7 @@ class Simulation(param.Parameterized,OptionalSingleton):
         # The return value cannot be a dictionary like objects(),
         # because connection names are not guaranteed to be unique
         connlists =[o.in_connections + o.out_connections
-                    for o in list(self.objects().values())]
+                    for o in self.objects().values()]
         # Flatten one level
         conns=[]
         for cl in connlists:

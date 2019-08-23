@@ -21,7 +21,7 @@ from topo.base.functionfamily import ResponseFn
 # Imported here so that all ResponseFns will be in the same package
 from topo.base.cf import DotProduct  # pyflakes:ignore (API import)
 
-_public = list(set([_k for _k,_v in list(locals().items())
+_public = list(set([_k for _k,_v in locals().items()
                     if isinstance(_v,type) and issubclass(_v,ResponseFn)]))
 
 # Automatically discover all .py files in this directory.

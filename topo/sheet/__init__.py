@@ -151,7 +151,7 @@ class JointNormalizingCFSheet(CFSheet):
         If active_units_mask is True, only active units will have
         their weights normalized.
         """
-        for key,projlist in list(self._grouped_in_projections('JointNormalize').items()):
+        for key,projlist in self._grouped_in_projections('JointNormalize').items():
             if key == None:
                 normtype='Individually'
             else:
@@ -393,7 +393,7 @@ class SettlingCFSheet(JointNormalizingCFSheet):
 
 
 
-_public = list(set([_k for _k,_v in list(locals().items()) if isinstance(_v,type) and issubclass(_v,Sheet)]))
+_public = list(set([_k for _k,_v in locals().items() if isinstance(_v,type) and issubclass(_v,Sheet)]))
 _public += [
     "compute_joint_norm_totals",
     "BoundingBox",

@@ -21,9 +21,9 @@ def pinwheel_overlay(pinwheels, contours=None, style='wo',linewidth=1):
    Plots the pinwheel locations and optionally the real and imaginary
    pinwheel contours. Designed to be overlayed over an OR map.
    """
-   fig = plt.figure(frameon=False)
+   fig = plt.figure()
    fig.patch.set_alpha(0.0)
-   ax = plt.subplot(111, aspect='equal', frameon=True)
+   ax = plt.subplot(111, aspect='equal')
    ax.patch.set_alpha(0.0)
    plt.hold(True)
 
@@ -62,7 +62,7 @@ def scale_box_overlay(normalized_width, offset = (0.1,0.195), color='w'):
     """
     Overlay that generates a scalebox with the given normalized width.
     """
-    fig = plt.figure(frameon=False)
+    fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.set_aspect('equal')
     ax.add_patch(plt.Rectangle(offset,normalized_width, normalized_width,
@@ -81,7 +81,7 @@ def FFT_histogram_overlay(amplitudes, fit, fit_function = KaschubeFit,
    """
    Intended for generating FFT histograms.
    """
-   fig = plt.figure(frameon=False)
+   fig = plt.figure()
    fig.patch.set_alpha(0.0)
    ax = fig.add_subplot(111)
    ax.patch.set_alpha(0.0)
@@ -165,7 +165,7 @@ def stream(xvals, samples, normalization=1.0, show_std=False,
 
 def map_development_plot(stabilities, selectivities, selectivity_norm,
                          figsize=(5.40212, 2), frame=False, spines=True):
-   fig = plt.figure(frameon=frame, figsize=figsize)
+   fig = plt.figure(figsize=figsize)
    fig.patch.set_alpha(0.0)
    ax = fig.add_subplot(111)
    ax.patch.set_alpha(0.0)
@@ -204,7 +204,7 @@ def map_development_streams(stabilities, selectivities, selectivity_norm,
    assert len(selectivities) == len(stabilities)
    xvals = list(range(len(stabilities)))
 
-   fig = plt.figure(frameon=frame, figsize=figsize)
+   fig = plt.figure(figsize=figsize)
    fig.patch.set_alpha(0.0)
    ax = fig.add_subplot(111)
    ax.patch.set_alpha(0.0)
@@ -236,8 +236,8 @@ def contrast_streams(contrasts, selectivities, stabilities, metrics, vlines=[]):
    selectivities = selectivities.transpose().tolist()
    metrics = metrics.transpose().tolist()
 
-   fig = plt.figure(frameon=False)
-   ax = fig.add_subplot(111, frameon=False)
+   fig = plt.figure()
+   ax = fig.add_subplot(111)
    stream(contrasts, selectivities, fillcolor='#ffcfcf', linecolor=(1,0,0))
    stream(contrasts, stabilities,   fillcolor='#ccccff', linecolor=(0,0,1))
    stream(contrasts, metrics,       fillcolor='#ccffcc', linecolor=(0,1,0))
@@ -359,7 +359,7 @@ def tanaka_histogram(data, bins=7, aspect=0.78):
 
     # Using matplotlib's bar plot to build the histogram.
     fig = plt.figure()
-    ax = plt.subplot(111, frameon=True)
+    ax = plt.subplot(111)
     bars = plt.bar(bin_edges[:-1], counts if replot else data_counts,
                    width=0.8/bins, color='k')
 

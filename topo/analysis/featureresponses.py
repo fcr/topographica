@@ -75,7 +75,7 @@ def update_activity(force=False):
     some sheets providing this information may be non-trivial, e.g. if
     they need to average over recent spiking activity.
     """
-    for sheet_name in list(topo.sim.objects(Sheet).keys()):
+    for sheet_name in topo.sim.objects(Sheet).keys():
         update_sheet_activity(sheet_name, force)
 
 
@@ -162,11 +162,11 @@ class pattern_present(PatternPresentingCommand):
 
         if not p.plastic:
             # turn off plasticity everywhere
-            for sheet in list(topo.sim.objects(Sheet).values()):
+            for sheet in topo.sim.objects(Sheet).values():
                 sheet.override_plasticity_state(new_plasticity_state=False)
 
         if not p.apply_output_fns:
-            for each in list(topo.sim.objects(Sheet).values()):
+            for each in topo.sim.objects(Sheet).values():
                 if hasattr(each, 'measure_maps'):
                     if each.measure_maps:
                         each.apply_output_fns = False
@@ -175,10 +175,10 @@ class pattern_present(PatternPresentingCommand):
         generatorsheets = topo.sim.objects(GeneratorSheet)
 
         if not isinstance(p.inputs, dict):
-            for g in list(generatorsheets.values()):
+            for g in generatorsheets.values():
                 g.set_input_generator(p.inputs)
         else:
-            for each in list(p.inputs.keys()):
+            for each in p.inputs.keys():
                 if each in generatorsheets:
                     generatorsheets[each].set_input_generator(p.inputs[each])
                 else:
@@ -202,7 +202,7 @@ class pattern_present(PatternPresentingCommand):
             if p.return_responses:
 
                 for output in outputs:
-                    if output in list(topo.sim.objects(Sheet).keys()):
+                    if output in topo.sim.objects(Sheet):
                         responses[(output, time)] = topo.sim[output].activity.copy()
                     elif output in projection_dict:
                         responses[(output, time)] = projection_dict[output].activity.copy()
@@ -213,11 +213,11 @@ class pattern_present(PatternPresentingCommand):
         # turn sheets' plasticity and output_fn plasticity back on if we
         # turned it off before
         if not p.plastic:
-            for sheet in list(topo.sim.objects(Sheet).values()):
+            for sheet in topo.sim.objects(Sheet).values():
                 sheet.restore_plasticity_state()
 
         if not p.apply_output_fns:
-            for each in list(topo.sim.objects(Sheet).values()):
+            for each in topo.sim.objects(Sheet).values():
                 each.apply_output_fns = True
 
         if not p.overwrite_previous:

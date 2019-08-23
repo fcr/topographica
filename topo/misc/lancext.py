@@ -566,7 +566,7 @@ class RunBatchCommand(TopoCommand):
       """
 
       formatted_spec = dict((k, repr(v) if isinstance(v,str) else str(v))
-                            for (k,v) in list(spec.items()))
+                            for (k,v) in spec.items())
       kwarg_opts = self._run_batch_kwargs(formatted_spec, tid, info)
       allopts = dict(formatted_spec,**kwarg_opts) # Override spec values if
                                                   # mistakenly included.

@@ -64,7 +64,7 @@ class WeightIsotropy(TreeOperation):
             l, b, r, t = self.p.roi
             lat_weights = tree.CFs[p]
             azimuths, weights = [], []
-            for key, cf in list(lat_weights[l:r, b:t].items()):
+            for key, cf in lat_weights[l:r, b:t].items():
                 # Get preferences for a particular unit
                 unit_angle, unit_x, unit_y = orelmnt[key], xelmnt[key], yelmnt[key]
                 unit_sel = selelmnt[key]
@@ -152,7 +152,7 @@ class WeightDistribution(TreeOperation):
             feature_arr = featurepref.data.flat
             cfs = tree.CFs[p]
             deltas, weights = [], []
-            for k, cf in list(cfs.items()):
+            for k, cf in cfs.items():
                 preferred = featurepref[k]
                 weight_arr = cf.situated.data.flat
                 feature_slice = feature_arr[weight_arr>0]

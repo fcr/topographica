@@ -467,7 +467,7 @@ class topographic_grid(xy_grid):
     def __call__(self, **params):
         p = ParamOverrides(self, params)
 
-        for sheet in list(topo.sim.objects(Sheet).values()):
+        for sheet in topo.sim.objects(Sheet).values():
             if ((p.xsheet_view_name in sheet.views.Maps) and
                     (p.ysheet_view_name in sheet.views.Maps)):
                 x = sheet.views.Maps[p.xsheet_view_name].last.data

@@ -283,7 +283,7 @@ class TemplatePlot(Plot):
         Sub-function used by plot: get the matrix shape and the bounding box
         of the SheetViews that constitute the TemplatePlot.
         """
-        for channel, name in list(self.channels.items()):
+        for channel, name in self.channels.items():
             try:
                 sv = self.view_dict.get(channel,{}).get(name, None)
             except:
@@ -582,7 +582,7 @@ class MultiOrPlot(TemplatePlot):
         super(MultiOrPlot,self).__init__(channels,sheet_views,density,
                                    plot_bounding_box,normalize,**params)
 
-        n       = len( list(channels.keys()) )
+        n = len(channels) 
         if density > 10:
             self.unit_size = int( density )
 

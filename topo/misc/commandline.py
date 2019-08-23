@@ -125,7 +125,7 @@ class GlobalParams(Parameterized,OptionalSingleton):
         Set in self.context all name=val pairs specified in **params,
         tracking new names and warning of any replacements.
         """
-        for name,val in list(params.items()):
+        for name,val in params.items():
             if name in self.context:
                 self.warning("Replacing previous value of '%s' with '%s'"%(name,val))
             self.context[name]=val
@@ -138,11 +138,11 @@ class GlobalParams(Parameterized,OptionalSingleton):
         """
         ## contains elaborate scheme to detect what is specified by
         ## -s, and to warn about any replacement
-        current_ids = dict([(k,id(v)) for k,v in list(self.context.items())])
+        current_ids = dict([(k,id(v)) for k,v in self.context.items()])
 
-        exec(arg, self.context)
+        exec arg in self.context
 
-        for k,v in list(self.context.items()):
+        for k,v in self.context.items():
             if k in self.unused_names and id(v)!=current_ids[k]:
                 self.warning("Replacing previous value of '%s' with '%s'"%(k,v))
 
@@ -162,7 +162,7 @@ class GlobalParams(Parameterized,OptionalSingleton):
 ##                 self.warning("'%s' still exists in global_params.context"%name)
 
         # detect duplicate param value that wasn't used (e.g. specified with after script)
-        for name,val in list(self.params().items()):
+        for name,val in self.params().items():
             if name in self.context:
                 if self.context[name]!=self.inspect_value(name):
                     self.warning("'%s=%s' is unused."%(name,self.context[name]))
@@ -176,7 +176,7 @@ class GlobalParams(Parameterized,OptionalSingleton):
           sets the value of the parameter in this object to that value, and then removes
           the name from context
         """
-        for p_name,p_obj in list(kw.items()):
+        for p_name,p_obj in kw.items():
             self._add_parameter(p_name,p_obj)
             if p_name in self.context:
                 setattr(self,p_name,self.context[p_name])
@@ -713,9 +713,9 @@ def t_action(option,opt_str,value,parser):
     if "list" in local_targets:
         available_items = sorted((list(target_description.items()) + list(local_target_descriptions.items())))
         max_len = max(len(k) for k,_ in available_items)
-        print(("---------------\nAvailable tests\n---------------\n%s"
+        print ("---------------\nAvailable tests\n---------------\n%s"
                % "\n".join('%s%s : %s'% (k,' '*(max_len-len(k)),v)
-                           for k,v in available_items)))
+                           for k,v in available_items))
 
     global something_executed
     something_executed=True

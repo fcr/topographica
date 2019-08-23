@@ -119,7 +119,7 @@ class ComponentDecorator(object):
 
         # Enable IPython tab completion in the settings method
         kwarg_string = ", ".join("%s=%s" % (name, type(p.default))
-                                 for (name, p) in list(object_type.params().items()))
+                                 for (name, p) in object_type.params().items())
         self.params.__func__.__doc__ =  'params(%s)' % kwarg_string
 
 
@@ -284,10 +284,10 @@ class Model(param.Parameterized):
         dictionary of params.
         """
 
-        for name,obj in list(self.params().items()):
+        for name,obj in self.params().items():
             global_params.add(**{name:obj})
 
-        for name,val in list(params.items()):
+        for name,val in params.items():
             global_params.params(name).default=val
 
         params.update(global_params.get_param_values())
@@ -390,7 +390,7 @@ class Model(param.Parameterized):
 
         if 'training_patterns' in setup_options:
             training_patterns = self.training_pattern_setup()
-            for name, training_pattern in list(training_patterns.items()):
+            for name, training_pattern in training_patterns.items():
                 model.training_patterns.set_path(name, training_pattern)
 
             self.properties['training_patterns'] = training_patterns
@@ -427,7 +427,7 @@ class Model(param.Parameterized):
 
 
     def _update_sheet_spec_parameters(self, model):
-        for sheet_spec in list(model.sheets.data.values()):
+        for sheet_spec in model.sheets.data.values():
             param_method = self.definition.lookup(self.__class__, sheet_spec.level, 'method')
             if not param_method:
                 raise Exception("Parameters for sheet level %r not specified" % sheet_spec.level)
@@ -446,7 +446,7 @@ class Model(param.Parameterized):
         if matchconditions is None:
             return False
 
-        for incoming_key, incoming_value in list(matchconditions.items()):
+        for incoming_key, incoming_value in matchconditions.items():
             if (incoming_key in src_sheet.properties and \
                     str(src_sheet.properties[incoming_key]) != str(incoming_value)) \
                     or (incoming_key not in src_sheet.properties and incoming_value is not None):
@@ -462,13 +462,13 @@ class Model(param.Parameterized):
         in dest_sheet.matchconditions, create a new ProjectionSpec
         object and add this item to self.projections.
         """
-        sheetspec_product = itertools.product(list(model.sheets.data.values()),
-                                              list(model.sheets.data.values()))
+        sheetspec_product = itertools.product(model.sheets.data.values(),
+                                              model.sheets.data.values())
         for src_sheet, dest_sheet in sheetspec_product:
 
             conditions = self.definition.compute_conditions(dest_sheet.level, self,
                                                             dest_sheet.properties)
-            for matchname, matchconditions in list(conditions.items()):
+            for matchname, matchconditions in conditions.items():
 
                 if self._matchcondition_holds(matchconditions, src_sheet):
 
