@@ -7,7 +7,7 @@ Extensions to pickle allowing items in __main__ to be saved.
 import pickle
 import types
 import __main__
-from io import StringIO
+from io import BytesIO
 
 import copy
 
@@ -35,26 +35,29 @@ class PickleMain(object):
         # effects for code elsewhere (although we don't use pickle
         # anywhere else ourselves...).
 
-        self.pickled_bytecode = StringIO()
+        self.pickled_bytecode = BytesIO()
         self.pickler = pickle.Pickler(self.pickled_bytecode,-1)
 
         # CB: pickle.Pickler's dispatch attribute is a class
         # attribute (I don't know why, but it is...), so before
         # modifying this instance's dispatch attribute we make sure
         # modifications will affect only this instance.
-        self.pickler.dispatch = copy.copy(self.pickler.dispatch)
+        if not hasattr(self.pickler, 'dispatch_table'):
+            self.pickler.dispatch_table = {}
+        else:
+            self.pickler.dispatch_table = copy.copy(self.pickler.dispatch_table)
 
-        self.pickler.dispatch[types.CodeType] = save_code
-        self.pickler.dispatch[types.FunctionType] = save_function
-        self.pickler.dispatch[dict] = save_module_dict
-        self.pickler.dispatch[types.new_class] = save_classobj
-        self.pickler.dispatch[types.MethodType] = save_instancemethod
-        self.pickler.dispatch[types.ModuleType] = save_module
-        self.pickler.dispatch[type] = save_type
+        self.pickler.dispatch_table[types.CodeType] = save_code
+        self.pickler.dispatch_table[types.FunctionType] = save_function
+        self.pickler.dispatch_table[dict] = save_module_dict
+        self.pickler.dispatch_table[types.new_class] = save_classobj
+        self.pickler.dispatch_table[types.MethodType] = save_instancemethod
+        self.pickler.dispatch_table[types.ModuleType] = save_module
+        self.pickler.dispatch_table[type] = save_type
 
         # CB: maybe this should be registered from elsewhere
         import param
-        self.pickler.dispatch[param.parameterized.ParameterizedMetaclass] = save_type
+        self.pickler.dispatch_table[param.parameterized.ParameterizedMetaclass] = save_type
 
 
     def __getstate__(self):
@@ -75,7 +78,7 @@ class PickleMain(object):
 
 
     def __setstate__(self,state):
-        bytecode = pickle.load(StringIO(state['pickled_bytecode'].getvalue()))
+        bytecode = pickle.load(BytesIO(state['pickled_bytecode'].getvalue()))
 
         for name,obj in list(bytecode.items()):
             print("%s restored from bytecode into __main__"%name)

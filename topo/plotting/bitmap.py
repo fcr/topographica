@@ -80,7 +80,7 @@ class Bitmap(param.Parameterized):
         """
         state = super(Bitmap,self).__getstate__()
         import io
-        f = io.StringIO()
+        f = io.BytesIO()
         image = state['image']
         image.save(f,format=image.format or 'TIFF') # format could be None (we should probably just not save in that case)
         state['image'] = f.getvalue()
@@ -94,7 +94,7 @@ class Bitmap(param.Parameterized):
         the 'image' string with an actual Image object.
         """
         import io
-        state['image'] = Image.open(io.StringIO(state['image']))
+        state['image'] = Image.open(io.BytesIO(state['image']))
         super(Bitmap,self).__setstate__(state)
 
 

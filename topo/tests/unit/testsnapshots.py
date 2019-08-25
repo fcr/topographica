@@ -59,7 +59,7 @@ class TestSnapshots(unittest.TestCase):
         # CEBALERT: should also test that unpickling order is correct
         # (i.e. startup_commands, class attributes, simulation)
         assert_array_equal(R_act,topo.sim['R'].activity)
-        self.assertEqual(Line.x,12.0)
+        self.assertEqual(Line.x,9.0)
         self.assertEqual(__main__.__dict__['z'],99)
 
 

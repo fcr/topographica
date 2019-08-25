@@ -7,6 +7,7 @@ Tests of distribution.py
 # finished in distribution.
 
 import unittest
+from topo import sheet # To initialise the Store
 from featuremapper.distribution import Distribution, DSF_WeightedAverage
 import copy
 

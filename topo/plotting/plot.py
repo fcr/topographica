@@ -594,7 +594,7 @@ class MultiOrPlot(TemplatePlot):
         if ( self.unit_size % 2 ) == 0:
             self.unit_size = self.unit_size + 1
 
-        n       = n / 2
+        n       = n // 2
         m       = []
         for i in range( n ):
             o           = self._get_matrix( "Or%d" % (i+1) )

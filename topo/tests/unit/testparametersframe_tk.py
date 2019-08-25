@@ -3,6 +3,7 @@ Tests for the ParametersFrame classes.
 """
 
 import __main__
+from topo import sheet # To initialise the Store
 import unittest
 import tkinter
 

@@ -28,6 +28,8 @@ from topo.sheet import GeneratorSheet,Sheet
 from .plot import make_template_plot, Plot
 from .plotfilesaver import PlotGroupSaver,CFProjectionPlotGroupSaver
 
+from functools import cmp_to_key
+
 # General CEBALERTs for this file:
 # * It is very difficult to understand what is happening in these
 #   classes!
@@ -134,7 +136,7 @@ class PlotGroup(param.Parameterized):
 
     def _sort_plots(self):
         """Sort plots according to their precedence, then alphabetically."""
-        self.plots.sort(_cmp_plot)
+        self.plots.sort(key=cmp_to_key(_cmp_plot))
 
 
     def __init__(self,**params):

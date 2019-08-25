@@ -5,6 +5,7 @@ Tests for the tkParameterized classes.
 
 ## CB: add test for change of po
 import __main__
+from topo import sheet # To initialise the Store
 import unittest
 # CEBALERT: will be replaced with call to param.tk.initialize() when
 # param.tk doesn't depend on anything from tkgui.__init__ (plus this
@@ -219,7 +220,7 @@ class TestParameterTypeRepresentations(unittest.TestCase):
         self.f.nu = 0.1
         nu_tkvar.set(0.9999999)
         self.f.update_idletasks()
-        self.f.update() # seems to be required on OS X
+#         self.f.update() # seems to be required on OS X; Crashes OSX Mojave
         nu_widget._tag_press_return()
         self.assertEqual(self.f.nu,0.9999999)
 

@@ -4,6 +4,7 @@ Unit test for the matplot lib in tkgui
 
 import os
 from nose.plugins.skip import SkipTest
+from topo import sheet # To initialise the Store
 
 if os.getenv("DISPLAY"):
     import topo.tkgui

@@ -3,6 +3,7 @@ Test for the PlotGroup class
 """
 
 import unittest
+from topo import sheet # To initialise the Store
 import topo.base.simulation
 from pprint import pprint
 from topo.plotting import plot

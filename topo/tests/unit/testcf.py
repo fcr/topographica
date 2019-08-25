@@ -37,7 +37,7 @@ class TestCFIter(unittest.TestCase):
             total += 1
             self.assertTrue(0 <= i < 100, "CFIter generated bogus CF index")
             cfxy = (proj.X_cf.flat[i],proj.Y_cf.flat[i])
-            r,c = i/cols,i%cols
+            r,c = i//cols,i%cols
             self.assertEqual(cfxy,dest.matrixidx2sheet(r,c))
         self.assertEqual(total,100)
 
